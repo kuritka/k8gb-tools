@@ -1,7 +1,7 @@
 // Package cmd implements three different commands
-// - status
-// - test
-// - install
+// - status, gets and validates all gslbs cross the contexts
+// - install, install gslb to context
+// - list, returns list of gslbs in particular contexts and namespaces
 package cmd
 
 import (
@@ -32,7 +32,6 @@ var rootCmd = &cobra.Command{
 	},
 	PersistentPostRun: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("\n\n bye! %v\n\n", emoji.CrossedFingers)
-		//logger.Info().Msg("done..")
 	},
 }
 

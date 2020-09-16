@@ -9,7 +9,6 @@ type CmdRunner struct {
 	service ICmdRunner
 }
 
-
 //New creates new instance of CmdRunner
 func New(command ICmdRunner) *CmdRunner {
 	return &CmdRunner{

@@ -1,7 +1,7 @@
-package status
+package list
 
 //Options input vars for command
 type Options struct {
-	Gslb string
-
+	//YamlConfig
+	YamlConfig string
 }
