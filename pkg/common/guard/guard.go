@@ -20,5 +20,5 @@ func FailOnError(err error, message string, a ...interface{}) {
 //Message write message to output on the screen. Nothing else...
 func Message(message string, a ...interface{}) {
 	m := fmt.Sprintf(message, a...)
-	fmt.Printf("%s %s \n", emoji.OpenBook, aurora.Yellow(m))
+	fmt.Printf("%s %s\n", emoji.YellowSquare, aurora.Yellow(m))
 }

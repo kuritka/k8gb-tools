@@ -1,0 +1,6 @@
+k8gb-tools:
+  gslb:
+    name: test-gslb
+  cluster:
+    - test-gslb1
+    - test-gslb2
