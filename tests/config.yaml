@@ -1,6 +1,5 @@
+#config.yaml
 k8gb-tools:
-  gslb:
-    name: test-gslb
-  cluster:
-    - test-gslb1
-    - test-gslb2
+  gslb-name: test-gslb
+  config:
+    - /Users/ab011th/.kube/config

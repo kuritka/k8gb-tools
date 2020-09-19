@@ -12,7 +12,7 @@ import (
 func FailOnError(err error, message string, a ...interface{}) {
 	if err != nil {
 		m := fmt.Sprintf(message, a...)
-		msg := fmt.Sprintf("%s %s \n%s\n", emoji.RedCircle, aurora.White(m), aurora.Yellow(err.Error()))
+		msg := fmt.Sprintf("%s %s %s\n", emoji.RedCircle, aurora.White(m), aurora.Yellow(err.Error()))
 		panic(msg)
 	}
 }
