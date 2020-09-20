@@ -1,13 +1,12 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/kuritka/k8gb-tools/internal/cmd/internal/config"
+	"github.com/kuritka/k8gb-tools/pkg/common/guard"
 	"github.com/spf13/cobra"
 
 	"github.com/kuritka/k8gb-tools/internal/cmd/internal/runner"
 	"github.com/kuritka/k8gb-tools/internal/cmd/status"
-	"github.com/kuritka/k8gb-tools/pkg/common/guard"
 )
 
 var statusOptions status.Options
@@ -19,15 +18,9 @@ var statusCmd = &cobra.Command{
 	//Long:  ``,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		//var err error
-		//
-		//guard.FailOnError(err, "error when building command context")
-		status := status.New(statusOptions)
-		cfg,err := config.NewConfigFactory(statusOptions.YamlConfig,statusOptions.Gslb)
-		if err != nil {
-			guard.FailOnError(err,"")
-		}
-		fmt.Println(cfg)
+		cfg,err := config.GetConfig(statusOptions.YamlConfig,statusOptions.Gslb)
+		guard.FailOnError(err, "configuration error in startup")
+		status := status.New(cfg)
 		runner.New(status).MustRun()
 	},
 }

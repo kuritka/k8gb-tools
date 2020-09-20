@@ -16,7 +16,7 @@ import (
 //	- test-gslb2
 
 //Config struct for k8gb-tools
-type yamlConfig struct {
+type Config struct {
 	//K8gbTools root structure
 	K8gbTools struct {
 		//Name of Gslb
@@ -27,9 +27,9 @@ type yamlConfig struct {
 }
 
 // newConfig returns a new decoded Config struct
-func newConfig(configPath string) (config *yamlConfig,err error) {
+func newConfig(configPath string) (config Config,err error) {
 	// Create config structure
-	config = new(yamlConfig)
+	config = Config{}
 	// Open config file
 	file, err := os.Open(configPath)
 	if err != nil {
@@ -61,7 +61,7 @@ func validateConfigPath(path string) error {
 }
 
 
-func (c *yamlConfig) validate() (err error) {
+func (c *Config) validate() (err error) {
 	if c.K8gbTools.Name == "" {
 		return fmt.Errorf("yaml configuration: missing gslb-name")
 	}

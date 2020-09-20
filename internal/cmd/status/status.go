@@ -1,14 +1,19 @@
 package status
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/kuritka/k8gb-tools/internal/cmd/internal/config"
+	"github.com/kuritka/k8gb-tools/internal/cmd/internal/k8sctx"
+)
 
 type Status struct {
-	opts Options
+	config config.Config
 }
 
-func New(opts Options) (status *Status) {
+func New(cfg config.Config) (status *Status) {
 	status = new(Status)
-	status.opts = opts
+	ctx,err := k8sctx.NewContextFactory(cfg).Get()
+
 	return
 }
 

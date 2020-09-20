@@ -1,29 +1,25 @@
 package config
 
-import (
-	"fmt"
-)
+import "k8s.io/cli-runtime/pkg/genericclioptions"
 
-type ConfigFactory struct {
-
-}
-
-func NewConfigFactory(configPath, gslb string) (f *ConfigFactory,err  error) {
-	f = new(ConfigFactory)
+//GetConfig provides valid configuration
+func GetConfig(configPath, gslb string) (config Config,err  error) {
+	if configPath == "" {
+		configFlags := genericclioptions.NewConfigFlags(true)
+		path := *configFlags.KubeConfig
+		config = Config{}
+		config.K8gbTools.Name = gslb
+		config.K8gbTools.ConfigPaths = []string{path}
+		return
+	}
 	if validateConfigPath(configPath) == nil {
-		var config *yamlConfig
 		if config,err = newConfig(configPath); err != nil {
 			return
 		}
 		if err = config.validate(); err != nil {
 			return
 		}
-		for _, path := range config.K8gbTools.ConfigPaths {
-			fmt.Println(path)
-		}
 		return
 	}
-	//config yaml is not provided
-	//fmt.Println(gslb)
 	return
 }
