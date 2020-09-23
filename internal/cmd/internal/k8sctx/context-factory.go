@@ -3,7 +3,6 @@ package k8sctx
 import (
 	"context"
 	"fmt"
-	"github.com/kuritka/k8gb-tools/internal/cmd/internal/config"
 	"os"
 
 	"k8s.io/client-go/dynamic"
@@ -13,11 +12,11 @@ import (
 
 //ContextFactory keeps k8s context
 type ContextFactory struct {
-	config config.Config
+	config *KubeConfig
 }
 
 //NewContextFactory returns context of command
-func NewContextFactory(config config.Config) *ContextFactory {
+func NewContextFactory(config *KubeConfig) *ContextFactory {
 	return &ContextFactory{
 		config: config,
 	}
@@ -26,7 +25,6 @@ func NewContextFactory(config config.Config) *ContextFactory {
 //Get returns context
 func (cf *ContextFactory) Get() (*Context, error) {
 	var err error
-	configFlags := genericclioptions.NewConfigFlags(true)
 	ctx := new(Context)
 	ctx.Command = new(Command)
 	ctx.Command.Context, ctx.Command.Cancel = context.WithCancel(context.Background())

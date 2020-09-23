@@ -22,8 +22,8 @@ type KubeConfig struct {
 }
 
 
-//Reads all configuration from config path
-func Get(kubeConfigPath string) (config *KubeConfig, err error) {
+//GetConfig instantiate all possible configurations
+func GetConfig(kubeConfigPath string) (config *KubeConfig, err error) {
 	config = new(KubeConfig)
 	b, err := ioutil.ReadFile(kubeConfigPath)
 	if err != nil {

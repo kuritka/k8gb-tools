@@ -18,12 +18,14 @@ func New(cfg config.Config) (status *Status) {
 	guard.FailOnError(err,"reading configuration")
 	load := make([]*k8sctx.KubeConfig,len(cfg.K8gbTools.ConfigPaths))
 	for _, path := range cfg.K8gbTools.ConfigPaths {
-		c, err := k8sctx.Get(path)
+		k8scfg, err := k8sctx.GetConfig(path)
+		guard.FailOnError(err,"fail on reading %s",path)
+		ctx,err := k8sctx.NewContextFactory(k8scfg).Get()
 		guard.FailOnError(err,"fail on reading %s",path)
 		load = append(load, c)
 	}
 //	ctx,_ := k8sctx.NewContextFactory(cfg).Get()
-	fmt.Println(ctx)
+//	fmt.Println(ctx)
 	return
 }
 
