@@ -1,4 +1,4 @@
-package k8sctx
+package config
 
 import (
 	"fmt"
@@ -21,9 +21,17 @@ type KubeConfig struct {
 	ClientConfig clientcmd.ClientConfig
 }
 
+type KubeConfigFactory struct {
+
+}
+
+//todo: factory in factory etc...
+func NewKubeConfigFactory() *KubeConfigFactory {
+	return new(NewKubeConfigFactory)
+}
 
 //GetConfig instantiate all possible configurations
-func GetConfig(kubeConfigPath string) (config *KubeConfig, err error) {
+func (f *KubeConfigFactory) GetConfig(kubeConfigPath string) (config *KubeConfig, err error) {
 	config = new(KubeConfig)
 	b, err := ioutil.ReadFile(kubeConfigPath)
 	if err != nil {
