@@ -5,26 +5,31 @@ import (
 	"os"
 
 	"gopkg.in/yaml.v2"
+	"k8s.io/cli-runtime/pkg/genericclioptions"
 )
 
-//#config.yaml
-//
-//k8gb-tools:
-//	gslb-name: test-gslb
-//	config:
-//	- test-gslb1
-//	- test-gslb2
-
-//Config struct for k8gb-tools
-type Config struct {
-	//K8gbTools root structure
-	K8gbTools struct {
-		//Name of Gslb
-		Name string `yaml:"gslb-name"`
-		//ConfigPaths array of paths to configuration; if empty it uses default configuration
-		ConfigPaths[] string `yaml:"config"`
-	}`yaml:"k8gb-tools"`
+//GetConfig provides valid configuration or returns error
+func  GetConfig(configPath, gslb string) (config Config,err  error) {
+	if configPath == "" {
+		configFlags := genericclioptions.NewConfigFlags(true)
+		path := *configFlags.KubeConfig
+		config = Config{}
+		config.K8gbTools.Name = gslb
+		config.K8gbTools.ConfigPaths = []string{path}
+		return
+	}
+	if validateConfigPath(configPath) == nil {
+		if config,err = newConfig(configPath); err != nil {
+			return
+		}
+		if err = config.validate(); err != nil {
+			return
+		}
+		return
+	}
+	return
 }
+
 
 // newConfig returns a new decoded Config struct
 func newConfig(configPath string) (config Config,err error) {
@@ -59,7 +64,6 @@ func validateConfigPath(path string) error {
 	}
 	return nil
 }
-
 
 func (c *Config) validate() (err error) {
 	if c.K8gbTools.Name == "" {

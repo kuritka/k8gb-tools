@@ -1,7 +1,8 @@
-package config
+package k8s
 
 import (
 	"fmt"
+	"github.com/kuritka/k8gb-tools/internal/cmd/internal/config"
 	"io/ioutil"
 	"k8s.io/client-go/dynamic"
 	restclient "k8s.io/client-go/rest"
@@ -22,16 +23,31 @@ type KubeConfig struct {
 }
 
 type KubeConfigFactory struct {
-
+	yaml config.Config
 }
 
-//todo: factory in factory etc...
-func NewKubeConfigFactory() *KubeConfigFactory {
-	return new(NewKubeConfigFactory)
+//NewKubeConfigFactory receives yaml path or gslb name and returns error if invalid
+func NewKubeConfigFactory(yaml, gslb string) (factory *KubeConfigFactory, err error) {
+	factory = new(KubeConfigFactory)
+	factory.yaml, err = config.GetConfig(yaml,gslb)
+	return
 }
 
 //GetConfig instantiate all possible configurations
-func (f *KubeConfigFactory) GetConfig(kubeConfigPath string) (config *KubeConfig, err error) {
+func (f *KubeConfigFactory) InitializeConfigs() (configs []*KubeConfig, err error) {
+	configs = make([]*KubeConfig,0)
+	for _, path := range f.yaml.K8gbTools.ConfigPaths {
+		cfg,err := getConfig(path)
+		if err != nil {
+			return configs,err
+		}
+		configs = append(configs, cfg)
+	}
+	return
+}
+
+
+func getConfig(kubeConfigPath string) (config *KubeConfig, err error) {
 	config = new(KubeConfig)
 	b, err := ioutil.ReadFile(kubeConfigPath)
 	if err != nil {
