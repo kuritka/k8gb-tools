@@ -21,9 +21,7 @@ type K8s struct {
 	RawConfig      api.Config
 	ListNamespaces bool
 	genericclioptions.IOStreams
-	ctxBackup  string
-	kubeConfig string
-	Cluster    string
+	Cluster string
 }
 
 //Command contains command

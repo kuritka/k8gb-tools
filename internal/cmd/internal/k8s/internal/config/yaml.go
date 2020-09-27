@@ -14,7 +14,6 @@ type Config struct {
 		//Name of Gslb
 		Name string `yaml:"gslb-name"`
 		//ConfigPaths array of paths to configuration; if empty it uses default configuration
-		ConfigPaths[] string `yaml:"config"`
-	}`yaml:"k8gb-tools"`
+		ConfigPaths []string `yaml:"config"`
+	} `yaml:"k8gb-tools"`
 }
-

@@ -2,7 +2,7 @@ package k8s
 
 import (
 	"fmt"
-	"github.com/kuritka/k8gb-tools/internal/cmd/internal/config"
+	"github.com/kuritka/k8gb-tools/internal/cmd/internal/k8s/internal/config"
 	"io/ioutil"
 	"k8s.io/client-go/dynamic"
 	restclient "k8s.io/client-go/rest"
@@ -29,23 +29,22 @@ type KubeConfigFactory struct {
 //NewKubeConfigFactory receives yaml path or gslb name and returns error if invalid
 func NewKubeConfigFactory(yaml, gslb string) (factory *KubeConfigFactory, err error) {
 	factory = new(KubeConfigFactory)
-	factory.yaml, err = config.GetConfig(yaml,gslb)
+	factory.yaml, err = config.GetConfig(yaml, gslb)
 	return
 }
 
 //GetConfig instantiate all possible configurations
 func (f *KubeConfigFactory) InitializeConfigs() (configs []*KubeConfig, err error) {
-	configs = make([]*KubeConfig,0)
+	configs = make([]*KubeConfig, 0)
 	for _, path := range f.yaml.K8gbTools.ConfigPaths {
-		cfg,err := getConfig(path)
+		cfg, err := getConfig(path)
 		if err != nil {
-			return configs,err
+			return configs, err
 		}
 		configs = append(configs, cfg)
 	}
 	return
 }
-
 
 func getConfig(kubeConfigPath string) (config *KubeConfig, err error) {
 	config = new(KubeConfig)
@@ -55,7 +54,7 @@ func getConfig(kubeConfigPath string) (config *KubeConfig, err error) {
 	}
 	config.ClientConfig, err = clientcmd.NewClientConfigFromBytes(b)
 	if err != nil {
-		return nil, fmt.Errorf("reading ClientConfig from %s %s",kubeConfigPath,err)
+		return nil, fmt.Errorf("reading ClientConfig from %s %s", kubeConfigPath, err)
 	}
 	config.RawConfig, err = config.ClientConfig.RawConfig()
 	if err != nil {

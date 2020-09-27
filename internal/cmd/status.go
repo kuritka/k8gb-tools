@@ -16,7 +16,7 @@ var statusCmd = &cobra.Command{
 	//Long:  ``,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		status := status.New(statusOptions.YamlConfig,statusOptions.Gslb)
+		status := status.New(statusOptions.YamlConfig, statusOptions.Gslb)
 		runner.New(status).MustRun()
 	},
 }

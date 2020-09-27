@@ -9,7 +9,7 @@ import (
 )
 
 //GetConfig provides valid configuration or returns error
-func  GetConfig(configPath, gslb string) (config Config,err  error) {
+func GetConfig(configPath, gslb string) (config Config, err error) {
 	if configPath == "" {
 		configFlags := genericclioptions.NewConfigFlags(true)
 		path := *configFlags.KubeConfig
@@ -19,7 +19,7 @@ func  GetConfig(configPath, gslb string) (config Config,err  error) {
 		return
 	}
 	if validateConfigPath(configPath) == nil {
-		if config,err = newConfig(configPath); err != nil {
+		if config, err = newConfig(configPath); err != nil {
 			return
 		}
 		if err = config.validate(); err != nil {
@@ -30,9 +30,8 @@ func  GetConfig(configPath, gslb string) (config Config,err  error) {
 	return
 }
 
-
 // newConfig returns a new decoded Config struct
-func newConfig(configPath string) (config Config,err error) {
+func newConfig(configPath string) (config Config, err error) {
 	// Create config structure
 	config = Config{}
 	// Open config file

@@ -1,27 +1,44 @@
 package k8sctx
-//
-//import (
-//	"context"
-//	"fmt"
-//	"os"
-//
-//	"k8s.io/client-go/dynamic"
-//
-//	"k8s.io/cli-runtime/pkg/genericclioptions"
-//)
-//
-////ContextFactory keeps k8s context
-//type ContextFactory struct {
-//	config *KubeConfig
-//}
-//
-////NewContextFactory returns context of command
-//func NewContextFactory(config *KubeConfig) *ContextFactory {
-//	return &ContextFactory{
-//		config: config,
-//	}
-//}
-//
+
+import (
+	"github.com/kuritka/k8gb-tools/internal/cmd/internal/k8s"
+)
+
+//ContextFactory produces k8s context
+type ContextFactory struct {
+	configs []*k8s.KubeConfig
+}
+
+//NewContextFactory returns context of command
+func NewContextFactory(yaml, gslb string) (factory *ContextFactory, err error) {
+	factory = new(ContextFactory)
+	var k8sf *k8s.KubeConfigFactory
+	k8sf, err = k8s.NewKubeConfigFactory(yaml, gslb)
+	if err != nil {
+		return
+	}
+	factory.configs, err = k8sf.InitializeConfigs()
+	if err != nil {
+		return
+	}
+	return
+}
+
+//List returns list of GSLBs within namespaces
+func (f *ContextFactory) List() {
+
+}
+
+//List returns list of GSLBs within namespaces
+func (f *ContextFactory) Switch() {
+
+}
+
+//List returns list of GSLBs within namespaces
+func (f *ContextFactory) GetContext() {
+
+}
+
 ////Get returns context
 //func (cf *ContextFactory) Get() (*Context, error) {
 //	var err error
