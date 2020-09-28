@@ -2,7 +2,18 @@ package k8sctx
 
 import (
 	"github.com/kuritka/k8gb-tools/internal/cmd/internal/k8s"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
+
+var runtimeClassGVR = schema.GroupVersionResource{
+	Group:    "k8gb.absa.oss",
+	Version:  "v1beta1",
+	Resource: "gslbs",
+}
+
 
 //ContextFactory produces k8s context
 type ContextFactory struct {
@@ -25,8 +36,27 @@ func NewContextFactory(yaml, gslb string) (factory *ContextFactory, err error) {
 }
 
 //List returns list of GSLBs within namespaces
-func (f *ContextFactory) List() {
+func (f *ContextFactory) List() ([]ListItem,error){
+	li := make([]ListItem,0)
+	for _, config := range f.configs {
+		unstructuredList,err := config.DynamicConfig.Resource(runtimeClassGVR).List(metav1.ListOptions{})
+		if err != nil {
+			return li,err
+		}
+		raws := getUnstructured(unstructuredList)
 
+		for _, raw := range raws {
+			item := ListItem{
+				raw.Namespace,
+				raw.Name,
+				raw.Cluster,
+				raw.GeoTag,
+				config.RawConfig.CurrentContext,
+			}
+			li =append(li,item)
+		}
+	}
+	return li,nil
 }
 
 //List returns list of GSLBs within namespaces
@@ -39,28 +69,14 @@ func (f *ContextFactory) GetContext() {
 
 }
 
-////Get returns context
-//func (cf *ContextFactory) Get() (*Context, error) {
-//	var err error
-//	ctx := new(Context)
-//	ctx.Command = new(Command)
-//	ctx.Command.Context, ctx.Command.Cancel = context.WithCancel(context.Background())
-//	ctx.K8s = new(K8s)
-//	ctx.K8s.kubeConfig = *configFlags.KubeConfig
-//	ctx.K8s.Cluster = *configFlags.ClusterName
-//	ctx.K8s.IOStreams = genericclioptions.IOStreams{In: os.Stdin, Out: os.Stdout, ErrOut: os.Stderr}
-//	ctx.K8s.RawConfig, err = configFlags.ToRawKubeConfigLoader().RawConfig()
-//	if err != nil {
-//		return nil, fmt.Errorf("create RawConfig %s", err)
-//	}
-//	ctx.K8s.ClientConfig, err = configFlags.ToRESTConfig()
-//	if err != nil {
-//		return nil, fmt.Errorf("create Rest %s", err)
-//	}
-//	ctx.K8s.DynamicConfig, err = dynamic.NewForConfig(ctx.K8s.ClientConfig)
-//	if err != nil {
-//		return nil, fmt.Errorf("create Dynamic %s", err)
-//	}
-//	ctx.K8s.ctxBackup = ctx.K8s.RawConfig.CurrentContext
-//	return ctx, nil
-//}
+//maps unstructured data into GslbRaw structure. Any CRD change has to be reflected
+//in GslbRaw or underlying structures
+func getUnstructured(u *unstructured.UnstructuredList) (desc []GslbRaw) {
+	desc = make([]GslbRaw, len(u.Items))
+	for i, o := range u.Items {
+		d := GslbRaw{}
+		d.Error = runtime.DefaultUnstructuredConverter.FromUnstructured(o.Object, &d)
+		desc[i] = d
+	}
+	return
+}

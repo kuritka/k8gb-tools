@@ -70,3 +70,19 @@ func getConfig(kubeConfigPath string) (config *KubeConfig, err error) {
 	}
 	return
 }
+
+func switchContext(cfg KubeConfig, ctx string) (err error){
+	if cfg.RawConfig.Contexts[ctx] == nil {
+		return fmt.Errorf("context %s doesn't exists", ctx)
+	}
+	override := &clientcmd.ConfigOverrides{CurrentContext: ctx, Context: *cfg.RawConfig.Contexts[ctx]}
+	restConfig := clientcmd.NewNonInteractiveClientConfig(cfg.RawConfig, ctx,
+		override, &clientcmd.ClientConfigLoadingRules{})
+	cfg.RawConfig.CurrentContext = ctx
+	cfg.RestConfig, err = restConfig.ClientConfig()
+	if err != nil {
+		return
+	}
+	cfg.DynamicConfig, err = dynamic.NewForConfig(cfg.RestConfig)
+	return
+}

@@ -2,7 +2,7 @@ package status
 
 import (
 	"fmt"
-	"github.com/kuritka/k8gb-tools/internal/cmd/internal/k8s"
+	"github.com/kuritka/k8gb-tools/internal/cmd/internal/k8sctx"
 )
 
 type Status struct {
@@ -22,14 +22,14 @@ func (s *Status) String() string {
 }
 
 func (s *Status) Run() error {
-	ctx, err := k8s.NewKubeConfigFactory(s.yaml, s.gslb)
+	ctx, err := k8sctx.NewContextFactory(s.yaml, s.gslb)
 	if err != nil {
 		return err
 	}
-	cfgs, err := ctx.InitializeConfigs()
+	list, err := ctx.List()
 	if err != nil {
 		return err
 	}
-	fmt.Println(cfgs[0].RestConfig.Host)
-	return nil
+	fmt.Println(list)
+	return err
 }
