@@ -14,7 +14,6 @@ var runtimeClassGVR = schema.GroupVersionResource{
 	Resource: "gslbs",
 }
 
-
 //ContextFactory produces k8s context
 type ContextFactory struct {
 	configs []*k8s.KubeConfig
@@ -36,15 +35,14 @@ func NewContextFactory(yaml, gslb string) (factory *ContextFactory, err error) {
 }
 
 //List returns list of GSLBs within namespaces
-func (f *ContextFactory) List() ([]ListItem,error){
-	li := make([]ListItem,0)
+func (f *ContextFactory) List() ([]ListItem, error) {
+	li := make([]ListItem, 0)
 	for _, config := range f.configs {
-		unstructuredList,err := config.DynamicConfig.Resource(runtimeClassGVR).List(metav1.ListOptions{})
+		unstructuredList, err := config.DynamicConfig.Resource(runtimeClassGVR).List(metav1.ListOptions{})
 		if err != nil {
-			return li,err
+			return li, err
 		}
 		raws := getUnstructured(unstructuredList)
-
 		for _, raw := range raws {
 			item := ListItem{
 				raw.Namespace,
@@ -53,10 +51,10 @@ func (f *ContextFactory) List() ([]ListItem,error){
 				raw.GeoTag,
 				config.RawConfig.CurrentContext,
 			}
-			li =append(li,item)
+			li = append(li, item)
 		}
 	}
-	return li,nil
+	return li, nil
 }
 
 //List returns list of GSLBs within namespaces

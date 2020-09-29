@@ -2,7 +2,9 @@ package status
 
 import (
 	"fmt"
+	"github.com/enescakir/emoji"
 	"github.com/kuritka/k8gb-tools/internal/cmd/internal/k8sctx"
+	"github.com/logrusorgru/aurora"
 )
 
 type Status struct {
@@ -30,6 +32,9 @@ func (s *Status) Run() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(list)
+	fmt.Printf("\n%s %s\n", emoji.FourLeafClover, aurora.BrightBlue("k8gb"))
+	for _, l := range list {
+		fmt.Printf("\t%s\n", l)
+	}
 	return err
 }

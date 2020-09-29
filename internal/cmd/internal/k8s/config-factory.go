@@ -33,33 +33,52 @@ func NewKubeConfigFactory(yaml, gslb string) (factory *KubeConfigFactory, err er
 	return
 }
 
+//todo: move getRawConfigs functionality here!
 //GetConfig instantiate all possible configurations
 func (f *KubeConfigFactory) InitializeConfigs() (configs []*KubeConfig, err error) {
 	configs = make([]*KubeConfig, 0)
 	for _, path := range f.yaml.K8gbTools.ConfigPaths {
-		cfg, err := getConfig(path)
+		rawConfig, err := getRawConfigs(path)
 		if err != nil {
 			return configs, err
 		}
-		configs = append(configs, cfg)
+		for ctx := range rawConfig.Contexts {
+			c, err := initForContext(rawConfig, ctx)
+			if err != nil {
+				return configs, err
+			}
+			configs = append(configs, c)
+		}
 	}
 	return
 }
 
-func getConfig(kubeConfigPath string) (config *KubeConfig, err error) {
-	config = new(KubeConfig)
+func getRawConfigs(kubeConfigPath string) (rawConfig clientcmdapi.Config, err error) {
 	b, err := ioutil.ReadFile(kubeConfigPath)
 	if err != nil {
 		return
 	}
-	config.ClientConfig, err = clientcmd.NewClientConfigFromBytes(b)
+	clientConfig, err := clientcmd.NewClientConfigFromBytes(b)
 	if err != nil {
-		return nil, fmt.Errorf("reading ClientConfig from %s %s", kubeConfigPath, err)
+		return rawConfig, fmt.Errorf("reading ClientConfig from %s %s", kubeConfigPath, err)
 	}
-	config.RawConfig, err = config.ClientConfig.RawConfig()
+	rawConfig, err = clientConfig.RawConfig()
 	if err != nil {
-		return nil, fmt.Errorf("create RawConfig %s", err)
+		return rawConfig, fmt.Errorf("create RawConfig %s", err)
 	}
+	return
+}
+
+func initForContext(raw clientcmdapi.Config, ctx string) (config *KubeConfig, err error) {
+	config = new(KubeConfig)
+	if raw.Contexts[ctx] == nil {
+		return config, fmt.Errorf("context %s doesn't exists", ctx)
+	}
+	override := &clientcmd.ConfigOverrides{CurrentContext: ctx, Context: *raw.Contexts[ctx]}
+	config.ClientConfig = clientcmd.NewNonInteractiveClientConfig(raw, ctx,
+		override, &clientcmd.ClientConfigLoadingRules{})
+	config.RawConfig = raw
+	config.RawConfig.CurrentContext = ctx
 	config.RestConfig, err = config.ClientConfig.ClientConfig()
 	if err != nil {
 		return nil, fmt.Errorf("create Rest %s", err)
@@ -68,21 +87,5 @@ func getConfig(kubeConfigPath string) (config *KubeConfig, err error) {
 	if err != nil {
 		return nil, fmt.Errorf("create Dynamic %s", err)
 	}
-	return
-}
-
-func switchContext(cfg KubeConfig, ctx string) (err error){
-	if cfg.RawConfig.Contexts[ctx] == nil {
-		return fmt.Errorf("context %s doesn't exists", ctx)
-	}
-	override := &clientcmd.ConfigOverrides{CurrentContext: ctx, Context: *cfg.RawConfig.Contexts[ctx]}
-	restConfig := clientcmd.NewNonInteractiveClientConfig(cfg.RawConfig, ctx,
-		override, &clientcmd.ClientConfigLoadingRules{})
-	cfg.RawConfig.CurrentContext = ctx
-	cfg.RestConfig, err = restConfig.ClientConfig()
-	if err != nil {
-		return
-	}
-	cfg.DynamicConfig, err = dynamic.NewForConfig(cfg.RestConfig)
 	return
 }
