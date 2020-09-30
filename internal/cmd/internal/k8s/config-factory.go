@@ -2,8 +2,9 @@ package k8s
 
 import (
 	"fmt"
-	"github.com/kuritka/k8gb-tools/internal/cmd/internal/k8s/internal/config"
 	"io/ioutil"
+
+	"github.com/kuritka/k8gb-tools/internal/cmd/internal/k8s/internal/config"
 	"k8s.io/client-go/dynamic"
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -20,6 +21,8 @@ type KubeConfig struct {
 	DynamicConfig dynamic.Interface
 	//ClientConfig, keeps, raw info about cluster search for ToRawKubeConfigLoader()
 	ClientConfig clientcmd.ClientConfig
+	//Source
+	Source string
 }
 
 type KubeConfigFactory struct {
@@ -33,7 +36,6 @@ func NewKubeConfigFactory(yaml, gslb string) (factory *KubeConfigFactory, err er
 	return
 }
 
-//todo: move getRawConfigs functionality here!
 //GetConfig instantiate all possible configurations
 func (f *KubeConfigFactory) InitializeConfigs() (configs []*KubeConfig, err error) {
 	configs = make([]*KubeConfig, 0)
@@ -43,10 +45,11 @@ func (f *KubeConfigFactory) InitializeConfigs() (configs []*KubeConfig, err erro
 			return configs, err
 		}
 		for ctx := range rawConfig.Contexts {
-			c, err := initForContext(rawConfig, ctx)
+			c, err := switchContextAndReadConfigs(rawConfig, ctx)
 			if err != nil {
 				return configs, err
 			}
+			c.Source = path
 			configs = append(configs, c)
 		}
 	}
@@ -69,7 +72,7 @@ func getRawConfigs(kubeConfigPath string) (rawConfig clientcmdapi.Config, err er
 	return
 }
 
-func initForContext(raw clientcmdapi.Config, ctx string) (config *KubeConfig, err error) {
+func switchContextAndReadConfigs(raw clientcmdapi.Config, ctx string) (config *KubeConfig, err error) {
 	config = new(KubeConfig)
 	if raw.Contexts[ctx] == nil {
 		return config, fmt.Errorf("context %s doesn't exists", ctx)

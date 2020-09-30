@@ -47,9 +47,9 @@ func (f *ContextFactory) List() ([]ListItem, error) {
 			item := ListItem{
 				raw.Namespace,
 				raw.Name,
-				raw.Cluster,
 				raw.GeoTag,
 				config.RawConfig.CurrentContext,
+				config.Source,
 			}
 			li = append(li, item)
 		}

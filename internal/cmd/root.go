@@ -8,9 +8,12 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/enescakir/emoji"
+	"github.com/kuritka/k8gb-tools/pkg/common"
+	"github.com/logrusorgru/aurora"
+
 	"github.com/kuritka/k8gb-tools/pkg/common/guard"
 
-	"github.com/enescakir/emoji"
 	"github.com/spf13/cobra"
 )
 
@@ -31,7 +34,7 @@ var rootCmd = &cobra.Command{
 		}
 	},
 	PersistentPostRun: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("\n\n bye! %v\n\n", emoji.CrossedFingers)
+		fmt.Printf("\n Not sure what to do %s? check out %s! %s\n", aurora.BrightGreen("next"), aurora.BrightBlue(common.GitHubUrl), emoji.BeachWithUmbrella)
 	},
 }
 
