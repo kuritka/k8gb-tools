@@ -25,7 +25,5 @@ func init() {
 	//TODO: fix description
 	statusCmd.Flags().StringVarP(&statusOptions.Gslb, "gslb", "g", "", "name of gslb operator. List operators if not specified")
 	statusCmd.Flags().StringVarP(&statusOptions.YamlConfig, "config", "c", "", "config yaml containing gslb operator and kube config paths. If yaml file is not passed, the default config is chosen")
-	//err := statusCmd.MarkFlagRequired("gslb")
-	//guard.FailOnError(err, "namespace required")
 	rootCmd.AddCommand(statusCmd)
 }

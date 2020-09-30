@@ -35,6 +35,7 @@ func (s *Status) Run() error {
 	}
 	fmt.Printf("\n%s %s\n", emoji.FourLeafClover, aurora.BrightBlue("k8gb"))
 	for _, l := range list {
+		//TODO: would be in view. what is in formatting, what is here ?
 		fmt.Printf("\t%s\n\t      %s\n\n", l, aurora.Cyan(l.Source))
 	}
 	return err
