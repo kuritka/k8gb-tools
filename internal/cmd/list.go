@@ -23,8 +23,8 @@ var listCmd = &cobra.Command{
 
 func init() {
 	listCmd.Flags().StringVarP(&listOptions.YamlConfig, "config", "c", "",
-		"config yaml containing gslb operator and kube config paths. " +
-		"If yaml file is not passed, the default config is chosen. " +
-		"See " + common.GitHubConfigYaml)
+		"config yaml containing gslb operator and kube config paths. "+
+			"If yaml file is not passed, the default config is chosen. "+
+			"See "+common.GitHubConfigYaml)
 	rootCmd.AddCommand(listCmd)
 }

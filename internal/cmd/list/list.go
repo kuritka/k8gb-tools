@@ -40,4 +40,3 @@ func (s *Status) Run() error {
 	}
 	return err
 }
-
