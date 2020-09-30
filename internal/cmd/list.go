@@ -1,10 +1,10 @@
 package cmd
 
 import (
+	"github.com/kuritka/k8gb-tools/internal/cmd/internal/runner"
 	"github.com/spf13/cobra"
 
 	"github.com/kuritka/k8gb-tools/internal/cmd/list"
-	"github.com/kuritka/k8gb-tools/pkg/common/guard"
 )
 
 var listOptions list.Options
@@ -16,7 +16,8 @@ var listCmd = &cobra.Command{
 	//Long:  ``,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		guard.Message("List")
+		list := list.New(listOptions.YamlConfig, listOptions.Gslb)
+		runner.New(list).MustRun()
 	},
 }
 
