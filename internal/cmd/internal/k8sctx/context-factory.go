@@ -71,12 +71,13 @@ func (f *ContextFactory) GetContext() (err error) {
 }
 
 func readRaw(configs []*k8s.KubeConfig) (gslbRaws []GslbRaw, err error) {
+	gslbRaws = make([]GslbRaw,0)
 	for _, config := range configs {
 		unstructuredList, err := config.DynamicConfig.Resource(runtimeClassGVR).List(metav1.ListOptions{})
 		if err != nil {
 			return gslbRaws,err
 		}
-		gslbRaws = getUnstructured(unstructuredList, config)
+		gslbRaws = append(gslbRaws, getUnstructured(unstructuredList, config)...)
 	}
 	return
 }
