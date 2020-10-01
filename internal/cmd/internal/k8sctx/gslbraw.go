@@ -5,6 +5,8 @@ type GslbRaw struct {
 	Cluster    string
 	ApiVersion string
 	Error      error
+	Source     string
+	CurrentContext string
 	Metadata
 	Status
 	Spec
