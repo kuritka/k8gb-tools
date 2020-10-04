@@ -1,11 +1,9 @@
 package status
 
 import (
-	"fmt"
+	"github.com/kuritka/k8gb-tools/pkg/view"
 
-	"github.com/enescakir/emoji"
 	"github.com/kuritka/k8gb-tools/internal/cmd/internal/k8sctx"
-	"github.com/logrusorgru/aurora"
 )
 
 type Status struct {
@@ -29,13 +27,9 @@ func (s *Status) Run() error {
 	if err != nil {
 		return err
 	}
-	list, err := ctx.List()
+	model, err := ctx.GetStatus()
 	if err != nil {
 		return err
 	}
-	fmt.Printf("\n%s %s\n", emoji.FourLeafClover, aurora.BrightBlue("k8gb"))
-	for _, l := range list {
-		fmt.Printf("\t%s\n", l)
-	}
-	return err
+	return view.NewStatusView(model).Print()
 }

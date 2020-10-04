@@ -1,11 +1,11 @@
 package k8sctx
 
 type GslbRaw struct {
-	Kind       string
-	Cluster    string
-	ApiVersion string
-	Error      error
-	Source     string
+	Kind           string
+	Cluster        string
+	ApiVersion     string
+	Error          error
+	Source         string
 	CurrentContext string
 	Metadata
 	Status

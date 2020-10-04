@@ -1,4 +1,4 @@
-package k8sctx
+package model
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"github.com/logrusorgru/aurora"
 )
 
+//ListItem; list command model
 type ListItem struct {
 	Namespace string
 	Name      string
@@ -15,6 +16,7 @@ type ListItem struct {
 	Source    string
 }
 
+//TODO: consider to move it into the view
 func (l ListItem) String() string {
 	return fmt.Sprintf("%s %s (%s) -> geoTag: %s, context: %s",
 		emoji.LightBulb, aurora.Green(l.Name), aurora.BrightCyan(l.Namespace), aurora.BrightCyan(l.GeoTag), aurora.BrightCyan(l.Context))

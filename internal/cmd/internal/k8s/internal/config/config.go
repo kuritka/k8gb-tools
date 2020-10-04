@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/kuritka/k8gb-tools/pkg/common/guard"
+
 	"gopkg.in/yaml.v2"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 )
@@ -39,7 +41,7 @@ func newConfig(configPath string) (config Config, err error) {
 	if err != nil {
 		return
 	}
-	defer file.Close()
+	defer close(file)
 
 	// Init new YAML decode
 	d := yaml.NewDecoder(file)
@@ -49,6 +51,13 @@ func newConfig(configPath string) (config Config, err error) {
 		return
 	}
 	return
+}
+
+func close(file *os.File) {
+	err := file.Close()
+	if err != nil {
+		guard.FailOnError(err, "unable to close file %s", file.Name())
+	}
 }
 
 // validateConfigPath just makes sure, that the path provided is a file,

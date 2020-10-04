@@ -1,8 +1,8 @@
 package k8sctx
 
 import (
-	"fmt"
 	"github.com/kuritka/k8gb-tools/internal/cmd/internal/k8s"
+	"github.com/kuritka/k8gb-tools/pkg/model"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -36,48 +36,43 @@ func NewContextFactory(yaml, gslb string) (factory *ContextFactory, err error) {
 }
 
 //List returns list of GSLBs within namespaces
-func (f *ContextFactory) List() (li []ListItem, err error) {
-	li = make([]ListItem, 0)
+func (f *ContextFactory) List() (m []model.ListItem, err error) {
+	m = make([]model.ListItem, 0)
 	raws, err := readRaw(f.configs)
 	if err != nil {
-		return li, err
+		return m, err
 	}
-	for _, raw := range raws {
-		item := ListItem{
+	for _, raw := range raws.Gslb {
+		item := model.ListItem{
 			raw.Namespace,
 			raw.Name,
 			raw.GeoTag,
 			raw.CurrentContext,
 			raw.Source,
 		}
-		li = append(li, item)
+		m = append(m, item)
 	}
-	return li, nil
+	return m, nil
 }
 
 //List returns list of GSLBs within namespaces
-func (f *ContextFactory) GetContext() (err error) {
-	for _, config := range f.configs {
-		unstructuredList, err := config.DynamicConfig.Resource(runtimeClassGVR).List(metav1.ListOptions{})
-		if err != nil {
-			return err
-		}
-		raws := getUnstructured(unstructuredList, config)
-		for _, raw := range raws {
-			fmt.Println(raw)
-		}
+func (f *ContextFactory) GetStatus() (m model.Status, err error) {
+	raw, err := readRaw(f.configs)
+	if err != nil {
+		return m, err
 	}
+	m.GeoTag = *raw.ValidateGeoTag()
 	return
 }
 
-func readRaw(configs []*k8s.KubeConfig) (gslbRaws []GslbRaw, err error) {
-	gslbRaws = make([]GslbRaw,0)
+func readRaw(configs []*k8s.KubeConfig) (raw *raw, err error) {
+	raw = NewRaw()
 	for _, config := range configs {
 		unstructuredList, err := config.DynamicConfig.Resource(runtimeClassGVR).List(metav1.ListOptions{})
 		if err != nil {
-			return gslbRaws,err
+			return raw, err
 		}
-		gslbRaws = append(gslbRaws, getUnstructured(unstructuredList, config)...)
+		raw.Gslb = append(raw.Gslb, getUnstructured(unstructuredList, config)...)
 	}
 	return
 }
