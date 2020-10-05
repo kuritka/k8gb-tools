@@ -56,5 +56,5 @@ type Path struct {
 type Backend struct {
 	ServiceName string
 	//ServicePort TODO:local gslb setup contains value http.thats why stored as string now
-	ServicePort string `json:"servicePort,string"`
+	ServicePort int64 `json:"servicePort,string"`
 }

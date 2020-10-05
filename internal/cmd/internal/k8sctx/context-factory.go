@@ -1,6 +1,7 @@
 package k8sctx
 
 import (
+	"fmt"
 	"github.com/kuritka/k8gb-tools/internal/cmd/internal/k8s"
 	"github.com/kuritka/k8gb-tools/pkg/model"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -14,6 +15,15 @@ var runtimeClassGVR = schema.GroupVersionResource{
 	Version:  "v1beta1",
 	Resource: "gslbs",
 }
+
+var emptyGslb = GslbRaw{
+	Source: "",
+	Status: Status{GeoTag: ""},
+	Metadata: Metadata{Name: "",Namespace: ""},
+	CurrentContext: "",
+	Error: fmt.Errorf("no gslb in configuration"),
+}
+
 
 //ContextFactory produces k8s context
 type ContextFactory struct {
@@ -49,6 +59,7 @@ func (f *ContextFactory) List() (m []model.ListItem, err error) {
 			raw.GeoTag,
 			raw.CurrentContext,
 			raw.Source,
+			raw.Error,
 		}
 		m = append(m, item)
 	}
@@ -81,6 +92,11 @@ func readRaw(configs []*k8s.KubeConfig) (raw *raw, err error) {
 //in GslbRaw or underlying structures
 func getUnstructured(u *unstructured.UnstructuredList, config *k8s.KubeConfig) (gslbRaws []GslbRaw) {
 	gslbRaws = make([]GslbRaw, len(u.Items))
+	if len(u.Items) == 0 {
+		e := emptyGslb
+		e.Source = config.Source
+		return []GslbRaw{ e }
+	}
 	for i, o := range u.Items {
 		d := GslbRaw{}
 		d.Error = runtime.DefaultUnstructuredConverter.FromUnstructured(o.Object, &d)
