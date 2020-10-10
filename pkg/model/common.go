@@ -2,25 +2,20 @@ package model
 
 import (
 	"fmt"
-
 	"github.com/kuritka/k8gb-tools/pkg/common/types"
 )
 
 //Stringr store validation attributes for string values
 type Stringr struct {
+	Property       string
 	Values         []string
 	Error          error
 	Recommendation error
 }
 
-//Intr store validation attributes for int values
-type Intr struct {
-	Values []int64
-	Error  error
-}
-
-func InitStringr() *Stringr {
+func InitStringr(property string) *Stringr {
 	s := new(Stringr)
+	s.Property = property
 	s.Values = make([]string, 0)
 	return s
 }
@@ -74,7 +69,7 @@ func (s *Stringr) ValuesAreIn(setOfValues ...string) *Stringr {
 			}
 		}
 		if b == false {
-			s.Error = fmt.Errorf("%s is out of allowed definitions %s", value, setOfValues)
+			s.Error = fmt.Errorf(`"%s" is out of allowed definitions %s`, value, setOfValues)
 			return s
 		}
 	}

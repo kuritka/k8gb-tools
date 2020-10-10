@@ -75,8 +75,7 @@ func (f *ContextFactory) GetStatus() (m model.Status, err error) {
 	m.Name = *raw.ValidateName()
 	m.GeoTag = *raw.ValidateGeoTag()
 	m.Type = *raw.ValidateType()
-	m.Host = *raw.ValidateHost()
-	//err, isValid := m.Validate()
+	//m.Host = *raw.ValidateHost()
 	return
 }
 

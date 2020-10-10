@@ -18,7 +18,7 @@ func NewRaw() *raw {
 
 //ValidateGeoTag
 func (r *raw) ValidateGeoTag() *model.Stringr {
-	stringr := model.InitStringr()
+	stringr := model.InitStringr("GeoTag")
 	for _, gslbRaw := range r.Gslb {
 		stringr.Append(gslbRaw.Status.GeoTag)
 	}
@@ -28,7 +28,7 @@ func (r *raw) ValidateGeoTag() *model.Stringr {
 
 //ValidateName
 func (r *raw) ValidateName() *model.Stringr {
-	stringr := model.InitStringr()
+	stringr := model.InitStringr("Name")
 	for _, gslbRaw := range r.Gslb {
 		stringr.Append(gslbRaw.Name)
 	}
@@ -38,18 +38,18 @@ func (r *raw) ValidateName() *model.Stringr {
 
 //ValidateType
 func (r *raw) ValidateType() *model.Stringr {
-	stringr := model.InitStringr()
+	stringr := model.InitStringr("Type")
 	for _, gslbRaw := range r.Gslb {
 		stringr.Append(gslbRaw.Type)
 	}
 	return stringr.ValuesAreEqual().ValuesAreIn(common.Strategy[:]...)
 }
 
-//ValidateType
-func (r *raw) ValidateHost() *model.Stringr {
-	stringr := model.InitStringr()
-	for _, gslbRaw := range r.Gslb {
-		stringr.Append(gslbRaw.Type)
-	}
-	return stringr.ValuesAreEqual().ValuesAreIn(common.Strategy[:]...)
-}
+////ValidateType
+//func (r *raw) ValidateHost() *model.Stringr {
+//	stringr := model.InitStringr()
+//	for _, gslbRaw := range r.Gslb {
+//		stringr.Append(gslbRaw.Rules)
+//	}
+//	return stringr.ValuesAreEqual().ValuesAreIn(common.Strategy[:]...)
+//}
