@@ -6,4 +6,10 @@ type Status struct {
 	GeoTag Stringr
 	//Name
 	Name Stringr
+	//Type
+	Type Stringr
+	//Host
+	Host Stringr
+	//Ingress
+	Ingress Stringr
 }

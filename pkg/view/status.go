@@ -18,9 +18,16 @@ func NewStatusView(model model.Status) *StatusView {
 }
 
 func (v *StatusView) Print() error {
-	for _, geotag := range v.model.GeoTag.Values {
+	for i, geotag := range v.model.GeoTag.Values {
 		err := v.printer.Title(geotag)
-		guard.FailOnError(err, "printing geotag: %s", geotag)
+		guard.FailOnError(err, "printing geotag: %s", "Geotag")
+		err = v.printer.Subtitle(v.model.Name.Values[i])
+		guard.FailOnError(err, "printing name: %s", "Name")
+		v.printer.NewLine()
+		err = v.printer.Paragraph(v.model.Type.Values[i])
+		guard.FailOnError(err, "printing type: %s", "Type")
+		v.printer.NewLine()
+		v.printer.NewLine()
 	}
 	return nil
 }

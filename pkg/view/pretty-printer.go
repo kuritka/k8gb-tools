@@ -21,17 +21,24 @@ func DefaultPrettyPrinter() *PrettyPrinter {
 
 func (p *PrettyPrinter) Title(title string) (err error) {
 	err = p.print("%s %s", emoji.FourLeafClover, aurora.BrightCyan(title))
-	p.newLine()
+	p.NewLine()
 	return
 }
 
 func (p *PrettyPrinter) Subtitle(subtitle string) (err error) {
 	err = p.print("%4s %s", emoji.GreenCircle, aurora.Cyan(subtitle))
-	p.newLine()
+	p.NewLine()
 	return
 }
 
-func (p *PrettyPrinter) newLine() {
+func (p *PrettyPrinter) Paragraph(paragraph string) (err error) {
+	err = p.print("%8s %s"," ", aurora.White(paragraph))
+	p.NewLine()
+	return
+}
+
+
+func (p *PrettyPrinter) NewLine() {
 	_ = p.print("\n")
 }
 

@@ -1,6 +1,6 @@
 #config.yaml
 k8gb-tools:
-  gslb-name: test-gslb
+  gslb-name: artifactory-ha-gslb
   config:
     - /Users/ab011th/go/src/github.com/AbsaOSS/gslb-deploy/.kube/cto-bcp-270-nonprod/config
     - /Users/ab011th/go/src/github.com/AbsaOSS/gslb-deploy/.kube/cto-bcp-sdc-nonprod/config
