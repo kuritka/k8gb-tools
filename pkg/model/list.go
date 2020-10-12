@@ -14,7 +14,7 @@ type ListItem struct {
 	GeoTag    string
 	Context   string
 	Source    string
-	Error 	  error
+	Error     error
 }
 
 //TODO: consider to move it into the view

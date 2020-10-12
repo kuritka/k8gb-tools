@@ -25,7 +25,6 @@ func (r *raw) ValidateGeoTag() *model.Stringr {
 	return stringr.ValuesAreUnique().ValuesAreNotEmpty()
 }
 
-
 //ValidateName
 func (r *raw) ValidateName() *model.Stringr {
 	stringr := model.InitStringr("Name")
@@ -34,7 +33,6 @@ func (r *raw) ValidateName() *model.Stringr {
 	}
 	return stringr.ValuesAreEqual().ValuesAreNotEmpty()
 }
-
 
 //ValidateType
 func (r *raw) ValidateType() *model.Stringr {

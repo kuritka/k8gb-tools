@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+
 	"github.com/kuritka/k8gb-tools/pkg/common/types"
 )
 
@@ -64,11 +65,11 @@ func (s *Stringr) ValuesAreIn(setOfValues ...string) *Stringr {
 		b := false
 		for _, s := range setOfValues {
 			if s == value {
-				 b = true
-				 break
+				b = true
+				break
 			}
 		}
-		if b == false {
+		if !b {
 			s.Error = fmt.Errorf(`"%s" is out of allowed definitions %s`, value, setOfValues)
 			return s
 		}

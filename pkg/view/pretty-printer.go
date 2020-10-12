@@ -20,7 +20,7 @@ func DefaultPrettyPrinter() *PrettyPrinter {
 	}
 }
 
-func (p *PrettyPrinter) Title(title... string) (err error) {
+func (p *PrettyPrinter) Title(title ...string) (err error) {
 	if len(title) == 0 {
 		return fmt.Errorf("missing title")
 	}
@@ -30,7 +30,7 @@ func (p *PrettyPrinter) Title(title... string) (err error) {
 		return
 	}
 	err = p.print("%s %s (%s)", emoji.FourLeafClover, aurora.BrightCyan(title[0]),
-		aurora.BrightGreen(strings.Join(title[1:],",")))
+		aurora.BrightGreen(strings.Join(title[1:], ",")))
 	p.NewLine()
 	return
 }
@@ -44,13 +44,12 @@ func (p *PrettyPrinter) Subtitle(subtitle string) (err error) {
 func (p *PrettyPrinter) Paragraph(property, value string, serr error) (err error) {
 	var e = ""
 	if serr != nil {
-		e = fmt.Sprintf("%s %s",emoji.LightBulb, aurora.BrightRed(serr.Error()))
+		e = fmt.Sprintf("%s %s", emoji.LightBulb, aurora.BrightRed(serr.Error()))
 	}
-	err = p.print("%8s%-10s : %v %4s %s"," ",aurora.BrightMagenta(property), aurora.BrightYellow(value)," ",e)
+	err = p.print("%8s%-10s : %v %4s %s", " ", aurora.BrightMagenta(property), aurora.BrightYellow(value), " ", e)
 	p.NewLine()
 	return
 }
-
 
 func (p *PrettyPrinter) NewLine() {
 	_ = p.print("\n")

@@ -11,7 +11,7 @@ import (
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
-//KubeConfig
+//KubeConfig aggregates all configuration to access cluster, gslb and  configuration file
 type KubeConfig struct {
 	//RestConfig reads common resources
 	RestConfig *restclient.Config
@@ -25,6 +25,7 @@ type KubeConfig struct {
 	Source string
 }
 
+//KubeConfigFactory kube-tools configuration
 type KubeConfigFactory struct {
 	yaml config.Config
 }
@@ -36,7 +37,7 @@ func NewKubeConfigFactory(yaml, gslb string) (factory *KubeConfigFactory, err er
 	return
 }
 
-//GetConfig instantiate all possible configurations
+//InitializeConfigs instantiate all possible configurations
 func (f *KubeConfigFactory) InitializeConfigs() (configs []*KubeConfig, err error) {
 	configs = make([]*KubeConfig, 0)
 	for _, path := range f.yaml.K8gbTools.ConfigPaths {

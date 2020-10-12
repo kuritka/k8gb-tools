@@ -15,7 +15,7 @@ func FailOnNil(s interface{}, message string, a ...interface{}) {
 	n := reflect.ValueOf(s).IsNil()
 	if n {
 		m := fmt.Sprintf(message, a...)
-		println("Fail on nil: %s %s\n", emoji.RedCircle, aurora.White(m))
+		println("Fail on nil: %s %s\n", emoji.RedCircle, aurora.BrightRed(m))
 		os.Exit(-1)
 	}
 }
@@ -25,7 +25,7 @@ func FailOnError(err error, message string, a ...interface{}) {
 	if err != nil {
 		m := fmt.Sprintf(message, a...)
 		if message != "" {
-			print(fmt.Sprintf("%s %s\n%s\n", emoji.RedCircle, aurora.White(m), aurora.Yellow(err.Error())))
+			print(fmt.Sprintf("%s %s\n%s\n", emoji.RedCircle, aurora.BrightRed(m), aurora.Yellow(err.Error())))
 			os.Exit(1)
 		}
 		print(fmt.Sprintf("%s %s\n", emoji.RedCircle, aurora.Yellow(err.Error())))

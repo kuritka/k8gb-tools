@@ -11,5 +11,12 @@ type Status struct {
 	//Host
 	Host Stringr
 	//Ingress
-	Ingress Stringr
+	Ingress struct {
+		Rule []struct {
+			Host      Stringr
+			IpAddress Stringr
+			Node      Stringr
+		}
+		Annotations Stringr
+	}
 }

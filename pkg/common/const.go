@@ -5,4 +5,4 @@ const (
 	GitHubConfigYaml = "https://github.com/kuritka/k8gb-tools/blob/master/tests/config.yaml"
 )
 
-var Strategy = [...]string{"roundrobin","failover"}
+var Strategy = [...]string{"roundrobin", "failover"}

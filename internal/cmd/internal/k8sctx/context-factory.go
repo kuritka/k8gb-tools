@@ -2,6 +2,7 @@ package k8sctx
 
 import (
 	"fmt"
+
 	"github.com/kuritka/k8gb-tools/internal/cmd/internal/k8s"
 	"github.com/kuritka/k8gb-tools/pkg/model"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -17,13 +18,12 @@ var runtimeClassGVR = schema.GroupVersionResource{
 }
 
 var emptyGslb = GslbRaw{
-	Source: "",
-	Status: Status{GeoTag: ""},
-	Metadata: Metadata{Name: "",Namespace: ""},
+	Source:         "",
+	Status:         Status{GeoTag: ""},
+	Metadata:       Metadata{Name: "", Namespace: ""},
 	CurrentContext: "",
-	Error: fmt.Errorf("no gslb in configuration"),
+	Error:          fmt.Errorf("no gslb in configuration"),
 }
-
 
 //ContextFactory produces k8s context
 type ContextFactory struct {
@@ -66,7 +66,7 @@ func (f *ContextFactory) List() (m []model.ListItem, err error) {
 	return m, nil
 }
 
-//List returns list of GSLBs within namespaces
+//GetStatus returns gslb status across all configured contexts
 func (f *ContextFactory) GetStatus() (m model.Status, err error) {
 	raw, err := readRaw(f.configs)
 	if err != nil {
@@ -98,7 +98,7 @@ func getUnstructured(u *unstructured.UnstructuredList, config *k8s.KubeConfig) (
 	if len(u.Items) == 0 {
 		e := emptyGslb
 		e.Source = config.Source
-		return []GslbRaw{ e }
+		return []GslbRaw{e}
 	}
 	for i, o := range u.Items {
 		d := GslbRaw{}
