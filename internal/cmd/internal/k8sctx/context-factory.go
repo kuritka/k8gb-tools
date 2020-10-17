@@ -2,13 +2,13 @@ package k8sctx
 
 import (
 	"fmt"
-
 	"github.com/kuritka/k8gb-tools/internal/cmd/internal/k8s"
 	"github.com/kuritka/k8gb-tools/pkg/model"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/client-go/kubernetes"
 )
 
 var runtimeClassGVR = schema.GroupVersionResource{
@@ -82,11 +82,30 @@ func (f *ContextFactory) GetStatus() (m model.Status, err error) {
 func readRaw(configs []*k8s.KubeConfig) (raw *raw, err error) {
 	raw = NewRaw()
 	for _, config := range configs {
+
+
+
 		unstructuredList, err := config.DynamicConfig.Resource(runtimeClassGVR).List(metav1.ListOptions{})
 		if err != nil {
 			return raw, err
 		}
 		raw.Gslb = append(raw.Gslb, getUnstructured(unstructuredList, config)...)
+
+
+		cs, err := kubernetes.NewForConfig(config.RestConfig)
+		if err != nil {
+			return nil,err
+		}
+		for _, gslbRaw := range raw.Gslb {
+			ings,err := cs.NetworkingV1beta1().Ingresses(gslbRaw.Namespace).List(metav1.ListOptions{})
+			if err != nil {
+				return nil,err
+			}
+			for _, ing := range ings.Items {
+				ing
+				gslbRaw.Ingress = append(ing, gslbRaw.Ingress)
+			}
+		}
 	}
 	return
 }

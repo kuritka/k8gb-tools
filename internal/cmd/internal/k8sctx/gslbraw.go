@@ -8,6 +8,7 @@ type GslbRaw struct {
 	Error          error
 	Source         string
 	CurrentContext string
+	Ingress []IngressRaw
 	Metadata
 	Status
 	Spec
