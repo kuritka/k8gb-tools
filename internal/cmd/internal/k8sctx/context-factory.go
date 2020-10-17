@@ -102,8 +102,12 @@ func readRaw(configs []*k8s.KubeConfig) (raw *raw, err error) {
 				return nil,err
 			}
 			for _, ing := range ings.Items {
-				ing
-				gslbRaw.Ingress = append(ing, gslbRaw.Ingress)
+				i := IngressRaw{
+					Namespace: ing.Namespace,
+					Name: ing.Name,
+					Annotations: ing.Annotations,
+				}
+				gslbRaw.Ingress = append(gslbRaw.Ingress,i)
 			}
 		}
 	}

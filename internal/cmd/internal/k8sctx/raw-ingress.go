@@ -4,7 +4,7 @@ type IngressRaw struct {
 	Name string
 	Namespace string
 	Address []string
-	Annotations []string
+	Annotations map[string]string
 	Rule[] struct{
 		Host string
 	}
