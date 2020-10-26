@@ -12,7 +12,7 @@ type Status struct {
 	Host Stringr
 	//Ingress
 	Ingress struct {
-		Rule []struct {
+		Rules []struct {
 			Host      Stringr
 			IpAddress Stringr
 			Node      Stringr

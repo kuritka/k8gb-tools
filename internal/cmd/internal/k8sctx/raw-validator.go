@@ -43,6 +43,11 @@ func (r *raw) ValidateType() *model.Stringr {
 	return stringr.ValuesAreEqual().ValuesAreIn(common.Strategy[:]...)
 }
 
+//func (r *raw) ValidateIngress() *model.Stringr {
+//
+//}
+
+
 ////ValidateType
 //func (r *raw) ValidateHost() *model.Stringr {
 //	stringr := model.InitStringr()

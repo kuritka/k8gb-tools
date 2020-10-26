@@ -9,6 +9,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 )
 
 var runtimeClassGVR = schema.GroupVersionResource{
@@ -75,6 +76,13 @@ func (f *ContextFactory) GetStatus() (m model.Status, err error) {
 	m.Name = *raw.ValidateName()
 	m.GeoTag = *raw.ValidateGeoTag()
 	m.Type = *raw.ValidateType()
+	//for _, gslb := range raw.Gslb {
+	//	for _, ingress := range gslb.Ingress {
+	//		for _, rule := range ingress.Rules {
+	//
+	//			m.Ingress.Rules = append(m.Ingress.Rules, )
+	//		}
+	//	}
 	//m.Host = *raw.ValidateHost()
 	return
 }
@@ -83,14 +91,11 @@ func readRaw(configs []*k8s.KubeConfig) (raw *raw, err error) {
 	raw = NewRaw()
 	for _, config := range configs {
 
-
-
 		unstructuredList, err := config.DynamicConfig.Resource(runtimeClassGVR).List(metav1.ListOptions{})
 		if err != nil {
 			return raw, err
 		}
 		raw.Gslb = append(raw.Gslb, getUnstructured(unstructuredList, config)...)
-
 
 		cs, err := kubernetes.NewForConfig(config.RestConfig)
 		if err != nil {
@@ -101,13 +106,17 @@ func readRaw(configs []*k8s.KubeConfig) (raw *raw, err error) {
 			if err != nil {
 				return nil,err
 			}
-			for _, ing := range ings.Items {
-				i := IngressRaw{
-					Namespace: ing.Namespace,
-					Name: ing.Name,
-					Annotations: ing.Annotations,
+			for _, ingress := range ings.Items {
+				ing := new(IngressRaw)
+				ing.Name = ingress.Name
+				ing.Namespace = ingress.Namespace
+				ing.Annotations =  ingress.Annotations
+				for _, rule := range ingress.Spec.Rules {
+					r := new(RuleRaw)
+					r.Host = rule.Host
+					ing.Rules = append(ing.Rules,*r)
 				}
-				gslbRaw.Ingress = append(gslbRaw.Ingress,i)
+				gslbRaw.Ingress = append(gslbRaw.Ingress,*ing)
 			}
 		}
 	}
@@ -128,7 +137,33 @@ func getUnstructured(u *unstructured.UnstructuredList, config *k8s.KubeConfig) (
 		d.Error = runtime.DefaultUnstructuredConverter.FromUnstructured(o.Object, &d)
 		d.CurrentContext = config.RawConfig.CurrentContext
 		d.Source = config.Source
+		d.Ingress = getIngressRaw(config.RestConfig,)
 		gslbRaws[i] = d
+	}
+	return
+}
+
+
+func getIngressRaw(cfg *rest.Config, namespace string) (is []IngressRaw,err error) {
+	cs, err := kubernetes.NewForConfig(cfg)
+	if err != nil {
+		return
+	}
+	ings,err := cs.NetworkingV1beta1().Ingresses(namespace).List(metav1.ListOptions{})
+	if err != nil {
+		return
+	}
+	for _, ingress := range ings.Items {
+		ing := new(IngressRaw)
+		ing.Name = ingress.Name
+		ing.Namespace = ingress.Namespace
+		ing.Annotations =  ingress.Annotations
+		for _, rule := range ingress.Spec.Rules {
+			r := new(RuleRaw)
+			r.Host = rule.Host
+			ing.Rules = append(ing.Rules,*r)
+		}
+		is = append(is,*ing)
 	}
 	return
 }
