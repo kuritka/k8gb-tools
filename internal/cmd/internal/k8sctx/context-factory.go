@@ -76,6 +76,8 @@ func (f *ContextFactory) GetStatus() (m model.Status, err error) {
 	m.Name = *raw.ValidateName()
 	m.GeoTag = *raw.ValidateGeoTag()
 	m.Type = *raw.ValidateType()
+	m.Ingress = *raw.ValidateIngress()
+
 	//for _, gslb := range raw.Gslb {
 	//	for _, ingress := range gslb.Ingress {
 	//		for _, rule := range ingress.Rules {
@@ -95,8 +97,11 @@ func readRaw(configs []*k8s.KubeConfig) (raw *raw, err error) {
 		if err != nil {
 			return raw, err
 		}
-		raw.Gslb = append(raw.Gslb, getUnstructured(unstructuredList, config)...)
-
+		gslbs,err := getUnstructured(unstructuredList, config)
+		if err != nil {
+			return raw, err
+		}
+		raw.Gslb = append(raw.Gslb, gslbs...)
 		cs, err := kubernetes.NewForConfig(config.RestConfig)
 		if err != nil {
 			return nil,err
@@ -125,19 +130,23 @@ func readRaw(configs []*k8s.KubeConfig) (raw *raw, err error) {
 
 //maps unstructured data into GslbRaw structure. Any CRD change has to be reflected
 //in GslbRaw or underlying structures
-func getUnstructured(u *unstructured.UnstructuredList, config *k8s.KubeConfig) (gslbRaws []GslbRaw) {
+func getUnstructured(u *unstructured.UnstructuredList, config *k8s.KubeConfig) (gslbRaws []GslbRaw, err error) {
 	gslbRaws = make([]GslbRaw, len(u.Items))
 	if len(u.Items) == 0 {
 		e := emptyGslb
 		e.Source = config.Source
-		return []GslbRaw{e}
+		return []GslbRaw{e}, nil
 	}
 	for i, o := range u.Items {
 		d := GslbRaw{}
 		d.Error = runtime.DefaultUnstructuredConverter.FromUnstructured(o.Object, &d)
 		d.CurrentContext = config.RawConfig.CurrentContext
 		d.Source = config.Source
-		d.Ingress = getIngressRaw(config.RestConfig,)
+		ns := o.GetNamespace()
+		d.Ingress, err = getIngressRaw(config.RestConfig, ns)
+		if err != nil {
+			panic(err)
+		}
 		gslbRaws[i] = d
 	}
 	return

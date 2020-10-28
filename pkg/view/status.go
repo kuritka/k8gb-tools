@@ -1,6 +1,7 @@
 package view
 
 import (
+	"fmt"
 	"github.com/kuritka/k8gb-tools/pkg/common/guard"
 	"github.com/kuritka/k8gb-tools/pkg/model"
 )
@@ -25,6 +26,9 @@ func (v *StatusView) Print() error {
 		guard.FailOnError(v.printer.Title(geotag, v.model.Name.Values[i]), "printing geotag or name")
 		v.printer.NewLine()
 		guard.FailOnError(v.printer.Paragraph(v.model.Type.Property, v.model.Type.Values[i], v.model.Type.Error), "printing type")
+		for _, rule := range v.model.Ingress.Rules {
+			guard.FailOnError(v.printer.Paragraph("Ingress",fmt.Sprintf("%s %s %s",rule.Host, rule.IpAddress,rule.Node), nil),"printing ingress")
+		}
 		v.printer.NewLine()
 		v.printer.NewLine()
 	}
