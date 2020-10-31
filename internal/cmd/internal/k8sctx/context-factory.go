@@ -68,25 +68,38 @@ func (f *ContextFactory) List() (m []model.ListItem, err error) {
 }
 
 //GetStatus returns gslb status across all configured contexts
-func (f *ContextFactory) GetStatus() (m model.Status, err error) {
-	raw, err := readRaw(f.configs)
-	if err != nil {
-		return m, err
-	}
-	m.Name = *raw.ValidateName()
-	m.GeoTag = *raw.ValidateGeoTag()
-	m.Type = *raw.ValidateType()
-	m.Ingress = *raw.ValidateIngress()
+func (f *ContextFactory) GetStatus() (m []model.Status, err error) {
+	//Do validations and transitions here!
+	m = make([]model.Status,0)
+	r, err := readRaw(f.configs)
+	for _, g := range r.Gslb {
+		s := model.Status{}
 
+		s.Host = g.Cluster
+		s.Name = g.Name
+		s.GeoTag = g.GeoTag
+		s.Type = g.Type
+		s.Namespace = g.Namespace
+		for _, ir := range g.Ingress {
+			si := model.Ingress{}
+			si.Name = ir.Name
+			s.Ingresses = append(s.Ingresses, si)
+		}
+		m = append(m,s)
+	}
+	//m.Name = *raw.ValidateName()
+	//m.GeoTag = *raw.ValidateGeoTag()
+	//m.Type = *raw.ValidateType()
+	//m.Ingresses = *raw.ValidateIngress()
 	//for _, gslb := range raw.Gslb {
-	//	for _, ingress := range gslb.Ingress {
+	//	for _, ingress := range gslb.Ingresses {
 	//		for _, rule := range ingress.Rules {
 	//
-	//			m.Ingress.Rules = append(m.Ingress.Rules, )
+	//			m.Ingresses.Rules = append(m.Ingresses.Rules, )
 	//		}
 	//	}
 	//m.Host = *raw.ValidateHost()
-	return
+	return m, err
 }
 
 func readRaw(configs []*k8s.KubeConfig) (raw *raw, err error) {

@@ -1,6 +1,7 @@
 package status
 
 import (
+	"github.com/hashicorp/go-multierror"
 	"github.com/kuritka/k8gb-tools/pkg/view"
 
 	"github.com/kuritka/k8gb-tools/internal/cmd/internal/k8sctx"
@@ -22,7 +23,7 @@ func (s *Status) String() string {
 	return "status"
 }
 
-func (s *Status) Run() error {
+func (s *Status) Run() (errs error) {
 	ctx, err := k8sctx.NewContextFactory(s.yaml, s.gslb)
 	if err != nil {
 		return err
@@ -31,5 +32,8 @@ func (s *Status) Run() error {
 	if err != nil {
 		return err
 	}
-	return view.NewStatusView(model).Print()
+	for _, m := range model {
+		errs = multierror.Append(view.NewStatusView(m).Print())
+	}
+	return errs
 }

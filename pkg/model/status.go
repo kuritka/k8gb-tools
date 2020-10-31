@@ -3,20 +3,29 @@ package model
 //Status
 type Status struct {
 	//GeoTag
-	GeoTag Stringr
+	GeoTag string
 	//Name
-	Name Stringr
+	Name string
+	//Name
+	Namespace string
 	//Type
-	Type Stringr
+	Type string
 	//Host
-	Host Stringr
-	//Ingress
-	Ingress struct {
-		Rules []struct {
-			Host      Stringr
-			IpAddress Stringr
-			Node      Stringr
-		}
-		Annotations Stringr
-	}
+	Host string
+	//Ingresses
+	Ingresses []Ingress
 }
+
+//Ingress
+type Ingress struct {
+	Rules []struct {
+		Host      string
+		IpAddress string
+		Node      string
+	}
+	Annotations string
+	Name string
+}
+
+
+

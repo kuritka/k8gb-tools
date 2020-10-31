@@ -43,10 +43,8 @@ func (r *raw) ValidateType() *model.Stringr {
 	return stringr.ValuesAreEqual().ValuesAreIn(common.Strategy[:]...)
 }
 
-func (r *raw) ValidateIngress() *model.Stringr {
-	for _, gslbRaw := range r.Gslb {
-		gslbRaw.Ingress
-	}
+func (r *raw) ValidateIngress() *model.Ingress {
+	return nil
 }
 
 
