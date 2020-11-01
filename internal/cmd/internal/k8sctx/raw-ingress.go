@@ -6,8 +6,16 @@ type IngressRaw struct {
 	Address     []string
 	Annotations map[string]string
 	Rules       []RuleRaw
+	Labels      map[string]string
 }
 
 type RuleRaw struct {
-	Host string
+	Host     string
+	Backends []BackendRaw
+}
+
+type BackendRaw struct {
+	Service string
+	Port    int32
+	Path    string
 }

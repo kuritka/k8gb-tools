@@ -2,18 +2,20 @@ package model
 
 //Status
 type Status struct {
-	//GeoTag
+	// GeoTag
 	GeoTag string
-	//Name
+	// Name
 	Name string
-	//Name
+	// Name
 	Namespace string
-	//Type
+	// Type
 	Type string
-	//Host
+	// Host
 	Host string
-	//Ingresses
+	// Ingresses
 	Ingresses []Ingress
+	// Dig
+	Dig []string
 }
 
 //Ingress

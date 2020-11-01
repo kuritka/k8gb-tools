@@ -75,7 +75,6 @@ func (f *ContextFactory) GetStatus() (m []model.Status, err error) {
 	r, err := readRaw(f.configs)
 	for _, g := range r.Gslb {
 		s := model.Status{}
-
 		s.Host = g.Cluster
 		s.Name = g.Name
 		s.GeoTag = g.GeoTag
@@ -112,7 +111,6 @@ func (f *ContextFactory) GetStatus() (m []model.Status, err error) {
 func readRaw(configs []*k8s.KubeConfig) (raw *Raw, err error) {
 	raw = NewRaw()
 	for _, config := range configs {
-
 		unstructuredList, err := config.DynamicConfig.Resource(runtimeClassGVR).List(metav1.ListOptions{})
 		if err != nil {
 			return raw, err
@@ -122,28 +120,6 @@ func readRaw(configs []*k8s.KubeConfig) (raw *Raw, err error) {
 			return raw, err
 		}
 		raw.Gslb = append(raw.Gslb, gslbs...)
-		cs, err := kubernetes.NewForConfig(config.RestConfig)
-		if err != nil {
-			return nil, err
-		}
-		for _, gslbRaw := range raw.Gslb {
-			ings, err := cs.NetworkingV1beta1().Ingresses(gslbRaw.Namespace).List(metav1.ListOptions{})
-			if err != nil {
-				return nil, err
-			}
-			for _, ingress := range ings.Items {
-				ing := new(IngressRaw)
-				ing.Name = ingress.Name
-				ing.Namespace = ingress.Namespace
-				ing.Annotations = ingress.Annotations
-				for _, rule := range ingress.Spec.Rules {
-					r := new(RuleRaw)
-					r.Host = rule.Host
-					ing.Rules = append(ing.Rules, *r)
-				}
-				gslbRaw.Ingress = append(gslbRaw.Ingress, *ing)
-			}
-		}
 	}
 	return
 }
@@ -186,9 +162,14 @@ func getIngressRaw(cfg *rest.Config, namespace string) (is []IngressRaw, err err
 		ing.Name = ingress.Name
 		ing.Namespace = ingress.Namespace
 		ing.Annotations = ingress.Annotations
+		ing.Labels = ingress.Labels
 		for _, rule := range ingress.Spec.Rules {
 			r := new(RuleRaw)
 			r.Host = rule.Host
+			for _, p := range rule.HTTP.Paths {
+				b := BackendRaw{p.Backend.ServiceName, p.Backend.ServicePort.IntVal, p.Path}
+				r.Backends = append(r.Backends, b)
+			}
 			ing.Rules = append(ing.Rules, *r)
 		}
 		is = append(is, *ing)
