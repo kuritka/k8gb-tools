@@ -163,6 +163,9 @@ func getIngressRaw(cfg *rest.Config, namespace string) (is []IngressRaw, err err
 		ing.Namespace = ingress.Namespace
 		ing.Annotations = ingress.Annotations
 		ing.Labels = ingress.Labels
+		for _, lbi := range ingress.Status.LoadBalancer.Ingress {
+			ing.LoadBalancers = append(ing.LoadBalancers, EndpointRaw{lbi.IP, lbi.Hostname})
+		}
 		for _, rule := range ingress.Spec.Rules {
 			r := new(RuleRaw)
 			r.Host = rule.Host

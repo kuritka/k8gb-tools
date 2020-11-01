@@ -1,12 +1,18 @@
 package k8sctx
 
 type IngressRaw struct {
-	Name        string
-	Namespace   string
-	Address     []string
-	Annotations map[string]string
-	Rules       []RuleRaw
-	Labels      map[string]string
+	Name          string
+	Namespace     string
+	Address       []string
+	Annotations   map[string]string
+	Rules         []RuleRaw
+	Labels        map[string]string
+	LoadBalancers []EndpointRaw
+}
+
+type EndpointRaw struct {
+	IP   string
+	Host string
 }
 
 type RuleRaw struct {
