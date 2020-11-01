@@ -34,7 +34,7 @@ var rootCmd = &cobra.Command{
 		}
 	},
 	PersistentPostRun: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("\n Not sure what to do %s? check out %s! %s\n", aurora.BrightGreen("next"), aurora.BrightBlue(common.GitHubUrl), emoji.BeachWithUmbrella)
+		fmt.Printf("\n Not sure what to do %s? check out %s! %s\n", aurora.BrightGreen("next"), aurora.BrightBlue(common.GitHubURL), emoji.BeachWithUmbrella)
 	},
 }
 

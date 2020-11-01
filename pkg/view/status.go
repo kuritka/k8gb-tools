@@ -7,7 +7,7 @@ import (
 
 type StatusView struct {
 	printer *PrettyPrinter
-	status	model.Status
+	status  model.Status
 }
 
 //NewStatusView retreives status view
@@ -18,14 +18,13 @@ func NewStatusView(status model.Status) *StatusView {
 	return v
 }
 
-
 //Print prints view
 func (v *StatusView) Print() error {
 	guard.FailOnError(v.printer.Title(v.status.GeoTag, v.status.Name), "printing geotag or name")
 	v.printer.NewLine()
-	guard.FailOnError(v.printer.Paragraph("Type", v.status.Type,nil), "printing type")
+	guard.FailOnError(v.printer.Paragraph("Type", v.status.Type, nil), "printing type")
 	for _, ingress := range v.status.Ingresses {
-		guard.FailOnError(v.printer.Paragraph("Ingress", ingress.Name,nil), "ingress")
+		guard.FailOnError(v.printer.Paragraph("Ingress", ingress.Name, nil), "ingress")
 	}
 	v.printer.NewLine()
 	v.printer.NewLine()
@@ -34,7 +33,7 @@ func (v *StatusView) Print() error {
 	//	v.printer.NewLine()
 	//	guard.FailOnError(v.printer.Paragraph(v.model.Type.Property, v.model.Type.Values[i], v.model.Type.Error), "printing type")
 	//	for _, rule := range v.model.Ingresses.Rules {
-	//		guard.FailOnError(v.printer.Paragraph("Ingresses",fmt.Sprintf("%s %s %s",rule.Host, rule.IpAddress,rule.Node), nil),"printing ingress")
+	//		guard.FailOnError(v.printer.Paragraph("Ingresses",fmt.Sprintf("%s %s %s",rule.Host, rule.IPAddress,rule.Node), nil),"printing ingress")
 	//	}
 	//	v.printer.NewLine()
 	//	v.printer.NewLine()

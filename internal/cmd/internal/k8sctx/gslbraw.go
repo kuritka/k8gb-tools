@@ -1,66 +1,66 @@
 package k8sctx
 
-//GslbRaw raw configuration of GSLB
+//GslbRaw Raw configuration of GSLB
 type GslbRaw struct {
 	Kind           string
 	Cluster        string
-	ApiVersion     string
+	APIVersion     string
 	Error          error
 	Source         string
 	CurrentContext string
-	Ingress []IngressRaw
+	Ingress        []IngressRaw
 	Metadata
 	Status
 	Spec
 }
 
-//Metadata raw metadata of GSLB
+//Metadata Raw metadata of GSLB
 type Metadata struct {
 	Name        string
 	Namespace   string
 	Annotations map[string]string
 }
 
-//Status raw status of GSLB
+//Status Raw status of GSLB
 type Status struct {
 	GeoTag         string
 	HealthyRecords map[string][]string
 	ServiceHealth  map[string]string
 }
 
-//Spec raw spec of GSLB
+//Spec Raw spec of GSLB
 type Spec struct {
 	Ingress
 	Strategy
 }
 
-//Strategy raw strategy of GSLB
+//Strategy Raw strategy of GSLB
 type Strategy struct {
-	DnsTtlSeconds              int64 `json:"dnsTtlSeconds,string"`
+	DNSTtlSeconds              int64 `json:"dnsTtlSeconds,string"`
 	SplitBrainThresholdSeconds int64 `json:"splitBrainThresholdSeconds,string"`
 	Type                       string
 }
 
-//Ingress raw ingress of GSLB
+//Ingress Raw ingress of GSLB
 type Ingress struct {
 	Rules []Rule
 }
 
-//Rule raw rule of GSLB
+//Rule Raw rule of GSLB
 type Rule struct {
 	//Host
 	Host string
-	//Http
-	Http
+	//HTTP
+	HTTP
 }
 
-//Http raw http of GSLB
-type Http struct {
+//HTTP Raw http of GSLB
+type HTTP struct {
 	//Paths
 	Paths []Path
 }
 
-//Path raw path of GSLB
+//Path Raw path of GSLB
 type Path struct {
 	//Backend
 	Backend
@@ -68,7 +68,7 @@ type Path struct {
 	Path string
 }
 
-//Backend raw backend of GSLB
+//Backend Raw backend of GSLB
 type Backend struct {
 	ServiceName string
 	//ServicePort TODO:local gslb setup contains value http.thats why stored as string now

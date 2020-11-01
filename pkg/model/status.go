@@ -18,14 +18,11 @@ type Status struct {
 
 //Ingress
 type Ingress struct {
+	Name  string
 	Rules []struct {
 		Host      string
-		IpAddress string
+		IPAddress string
 		Node      string
 	}
-	Annotations string
-	Name string
+	Annotations map[string]string
 }
-
-
-

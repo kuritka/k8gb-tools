@@ -1,0 +1,9 @@
+linters:
+  disable-all: true
+  enable:
+  - deadcode
+  - goimports
+  - golint
+  - gosec
+run:
+  deadline: 1m

@@ -5,19 +5,19 @@ import (
 	"github.com/kuritka/k8gb-tools/pkg/model"
 )
 
-type raw struct {
+type Raw struct {
 	Gslb []GslbRaw
 }
 
 //NewRaw
-func NewRaw() *raw {
-	raw := new(raw)
+func NewRaw() *Raw {
+	raw := new(Raw)
 	raw.Gslb = make([]GslbRaw, 0)
 	return raw
 }
 
 //ValidateGeoTag
-func (r *raw) ValidateGeoTag() *model.Stringr {
+func (r *Raw) ValidateGeoTag() *model.Stringr {
 	stringr := model.InitStringr("GeoTag")
 	for _, gslbRaw := range r.Gslb {
 		stringr.Append(gslbRaw.Status.GeoTag)
@@ -26,7 +26,7 @@ func (r *raw) ValidateGeoTag() *model.Stringr {
 }
 
 //ValidateName
-func (r *raw) ValidateName() *model.Stringr {
+func (r *Raw) ValidateName() *model.Stringr {
 	stringr := model.InitStringr("Name")
 	for _, gslbRaw := range r.Gslb {
 		stringr.Append(gslbRaw.Name)
@@ -35,7 +35,7 @@ func (r *raw) ValidateName() *model.Stringr {
 }
 
 //ValidateType
-func (r *raw) ValidateType() *model.Stringr {
+func (r *Raw) ValidateType() *model.Stringr {
 	stringr := model.InitStringr("Type")
 	for _, gslbRaw := range r.Gslb {
 		stringr.Append(gslbRaw.Type)
@@ -43,13 +43,12 @@ func (r *raw) ValidateType() *model.Stringr {
 	return stringr.ValuesAreEqual().ValuesAreIn(common.Strategy[:]...)
 }
 
-func (r *raw) ValidateIngress() *model.Ingress {
+func (r *Raw) ValidateIngress() *model.Ingress {
 	return nil
 }
 
-
 ////ValidateType
-//func (r *raw) ValidateHost() *model.Stringr {
+//func (r *Raw) ValidateHost() *model.Stringr {
 //	stringr := model.InitStringr()
 //	for _, gslbRaw := range r.Gslb {
 //		stringr.Append(gslbRaw.Rules)

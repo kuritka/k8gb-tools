@@ -2,6 +2,7 @@ package k8sctx
 
 import (
 	"fmt"
+
 	"github.com/kuritka/k8gb-tools/internal/cmd/internal/k8s"
 	"github.com/kuritka/k8gb-tools/pkg/model"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -70,7 +71,7 @@ func (f *ContextFactory) List() (m []model.ListItem, err error) {
 //GetStatus returns gslb status across all configured contexts
 func (f *ContextFactory) GetStatus() (m []model.Status, err error) {
 	//Do validations and transitions here!
-	m = make([]model.Status,0)
+	m = make([]model.Status, 0)
 	r, err := readRaw(f.configs)
 	for _, g := range r.Gslb {
 		s := model.Status{}
@@ -80,29 +81,35 @@ func (f *ContextFactory) GetStatus() (m []model.Status, err error) {
 		s.GeoTag = g.GeoTag
 		s.Type = g.Type
 		s.Namespace = g.Namespace
-		for _, ir := range g.Ingress {
+		for _, ig := range g.Ingress {
 			si := model.Ingress{}
-			si.Name = ir.Name
+			si.Name = ig.Name
+			si.Annotations = ig.Annotations
+			for _, ir := range si.Rules {
+				r := Rule{}
+				r.Host = ir.Host
+				si.Rules = append(si.Rules, ir)
+			}
 			s.Ingresses = append(s.Ingresses, si)
 		}
-		m = append(m,s)
+		m = append(m, s)
 	}
-	//m.Name = *raw.ValidateName()
-	//m.GeoTag = *raw.ValidateGeoTag()
-	//m.Type = *raw.ValidateType()
-	//m.Ingresses = *raw.ValidateIngress()
-	//for _, gslb := range raw.Gslb {
+	//m.Name = *Raw.ValidateName()
+	//m.GeoTag = *Raw.ValidateGeoTag()
+	//m.Type = *Raw.ValidateType()
+	//m.Ingresses = *Raw.ValidateIngress()
+	//for _, gslb := range Raw.Gslb {
 	//	for _, ingress := range gslb.Ingresses {
 	//		for _, rule := range ingress.Rules {
 	//
 	//			m.Ingresses.Rules = append(m.Ingresses.Rules, )
 	//		}
 	//	}
-	//m.Host = *raw.ValidateHost()
+	//m.Host = *Raw.ValidateHost()
 	return m, err
 }
 
-func readRaw(configs []*k8s.KubeConfig) (raw *raw, err error) {
+func readRaw(configs []*k8s.KubeConfig) (raw *Raw, err error) {
 	raw = NewRaw()
 	for _, config := range configs {
 
@@ -110,31 +117,31 @@ func readRaw(configs []*k8s.KubeConfig) (raw *raw, err error) {
 		if err != nil {
 			return raw, err
 		}
-		gslbs,err := getUnstructured(unstructuredList, config)
+		gslbs, err := getUnstructured(unstructuredList, config)
 		if err != nil {
 			return raw, err
 		}
 		raw.Gslb = append(raw.Gslb, gslbs...)
 		cs, err := kubernetes.NewForConfig(config.RestConfig)
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
 		for _, gslbRaw := range raw.Gslb {
-			ings,err := cs.NetworkingV1beta1().Ingresses(gslbRaw.Namespace).List(metav1.ListOptions{})
+			ings, err := cs.NetworkingV1beta1().Ingresses(gslbRaw.Namespace).List(metav1.ListOptions{})
 			if err != nil {
-				return nil,err
+				return nil, err
 			}
 			for _, ingress := range ings.Items {
 				ing := new(IngressRaw)
 				ing.Name = ingress.Name
 				ing.Namespace = ingress.Namespace
-				ing.Annotations =  ingress.Annotations
+				ing.Annotations = ingress.Annotations
 				for _, rule := range ingress.Spec.Rules {
 					r := new(RuleRaw)
 					r.Host = rule.Host
-					ing.Rules = append(ing.Rules,*r)
+					ing.Rules = append(ing.Rules, *r)
 				}
-				gslbRaw.Ingress = append(gslbRaw.Ingress,*ing)
+				gslbRaw.Ingress = append(gslbRaw.Ingress, *ing)
 			}
 		}
 	}
@@ -165,13 +172,12 @@ func getUnstructured(u *unstructured.UnstructuredList, config *k8s.KubeConfig) (
 	return
 }
 
-
-func getIngressRaw(cfg *rest.Config, namespace string) (is []IngressRaw,err error) {
+func getIngressRaw(cfg *rest.Config, namespace string) (is []IngressRaw, err error) {
 	cs, err := kubernetes.NewForConfig(cfg)
 	if err != nil {
 		return
 	}
-	ings,err := cs.NetworkingV1beta1().Ingresses(namespace).List(metav1.ListOptions{})
+	ings, err := cs.NetworkingV1beta1().Ingresses(namespace).List(metav1.ListOptions{})
 	if err != nil {
 		return
 	}
@@ -179,13 +185,13 @@ func getIngressRaw(cfg *rest.Config, namespace string) (is []IngressRaw,err erro
 		ing := new(IngressRaw)
 		ing.Name = ingress.Name
 		ing.Namespace = ingress.Namespace
-		ing.Annotations =  ingress.Annotations
+		ing.Annotations = ingress.Annotations
 		for _, rule := range ingress.Spec.Rules {
 			r := new(RuleRaw)
 			r.Host = rule.Host
-			ing.Rules = append(ing.Rules,*r)
+			ing.Rules = append(ing.Rules, *r)
 		}
-		is = append(is,*ing)
+		is = append(is, *ing)
 	}
 	return
 }

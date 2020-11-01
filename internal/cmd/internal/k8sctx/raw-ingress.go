@@ -5,7 +5,7 @@ type IngressRaw struct {
 	Namespace   string
 	Address     []string
 	Annotations map[string]string
-	Rules  []RuleRaw
+	Rules       []RuleRaw
 }
 
 type RuleRaw struct {
