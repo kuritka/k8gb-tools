@@ -20,11 +20,25 @@ type Status struct {
 
 //Ingress
 type Ingress struct {
-	Name  string
-	Rules []struct {
-		Host      string
-		IPAddress string
-		Node      string
-	}
-	Annotations map[string]string
+	Name          string
+	Address       []string
+	Rules         []Rule
+	LoadBalancers []Endpoint
+	Annotations   map[string]string
+}
+
+type Endpoint struct {
+	IP   string
+	Host string
+}
+
+type Rule struct {
+	Host     string
+	Backends []Backend
+}
+
+type Backend struct {
+	Service string
+	Port    int32
+	Path    string
 }
