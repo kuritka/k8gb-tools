@@ -1,6 +1,7 @@
 package view
 
 import (
+	"fmt"
 	"github.com/kuritka/k8gb-tools/pkg/common/guard"
 	"github.com/kuritka/k8gb-tools/pkg/model"
 )
@@ -21,12 +22,14 @@ func NewStatusView(status model.Status) *StatusView {
 //Print prints view
 func (v *StatusView) Print() error {
 	guard.FailOnError(v.printer.Title(v.status.GeoTag, v.status.Name), "printing geotag or name")
-	v.printer.NewLine()
 	guard.FailOnError(v.printer.Paragraph("Type", v.status.Type, nil), "printing type")
 	for _, ingress := range v.status.Ingresses {
 		guard.FailOnError(v.printer.Paragraph("Ingress", ingress.Name, nil), "ingress")
 		for _, rule := range ingress.Rules {
 			guard.FailOnError(v.printer.NoParagraph(rule.Host, nil), "ingress")
+			for _, backend := range rule.Backends {
+				guard.FailOnError(v.printer.NoParagraph(fmt.Sprintf("%s:%v%s",backend.Service,backend.Port,backend.Path), nil), "ingress")
+			}
 		}
 	}
 	v.printer.NewLine()

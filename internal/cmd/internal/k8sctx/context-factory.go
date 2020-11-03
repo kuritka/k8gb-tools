@@ -56,12 +56,12 @@ func (f *ContextFactory) List() (m []model.ListItem, err error) {
 	}
 	for _, raw := range raws.Gslb {
 		item := model.ListItem{
-			raw.Namespace,
-			raw.Name,
-			raw.GeoTag,
-			raw.CurrentContext,
-			raw.Source,
-			raw.Error,
+			Namespace: raw.Namespace,
+			Name:      raw.Name,
+			GeoTag:    raw.GeoTag,
+			Context:   raw.CurrentContext,
+			Source:    raw.Source,
+			Error:     raw.Error,
 		}
 		m = append(m, item)
 	}
@@ -73,21 +73,29 @@ func (f *ContextFactory) GetStatus() (m []model.Status, err error) {
 	//Do validations and transitions here!
 	m = make([]model.Status, 0)
 	r, err := readRaw(f.configs)
-	for _, g := range r.Gslb {
+	for _, rg := range r.Gslb {
 		s := model.Status{}
-		s.Host = g.Cluster
-		s.Name = g.Name
-		s.GeoTag = g.GeoTag
-		s.Type = g.Type
-		s.Namespace = g.Namespace
-		for _, ig := range g.Ingress {
+		s.Host = rg.Cluster
+		s.Name = rg.Name
+		s.GeoTag = rg.GeoTag
+		s.Type = rg.Type
+		s.Namespace = rg.Namespace
+		for _, ri := range rg.Ingress {
 			si := model.Ingress{}
-			si.Name = ig.Name
-			si.Annotations = ig.Annotations
-			for _, ir := range si.Rules {
-				r := Rule{}
-				r.Host = ir.Host
-				si.Rules = append(si.Rules, ir)
+			si.Name = ri.Name
+			si.Annotations = ri.Annotations
+
+			for _, rr := range ri.Rules {
+				r := model.Rule{}
+				r.Host = rr.Host
+				for _, rb := range rr.Backends {
+					r.Backends = append(r.Backends,
+						model.Backend{
+						Service: rb.Service,
+						Port:    rb.Port,
+						Path:    rb.Path})
+				}
+				si.Rules = append(si.Rules, r)
 			}
 			s.Ingresses = append(s.Ingresses, si)
 		}
