@@ -3,6 +3,10 @@ lint:
 	golangci-lint run
 	go test  ./...
 
+.PHONY: dns-tools
+dns-tools:
+	@kubectl -n k8gb get svc k8gb-coredns
+	@kubectl -n k8gb run -it @
 
 .PHONY: list
 list:
