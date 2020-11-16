@@ -56,7 +56,7 @@ func (p *PrettyPrinter) NoParagraph(value string, serr error) (err error) {
 	if serr != nil {
 		e = fmt.Sprintf("%16s %s", emoji.LightBulb, aurora.BrightRed(serr.Error()))
 	}
-	err = p.print("%35s %s%s"," ", aurora.BrightBlue(value),e)
+	err = p.print("%35s %s%s", " ", aurora.BrightBlue(value), e)
 	p.NewLine()
 	return
 }

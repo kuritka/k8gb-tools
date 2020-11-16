@@ -91,9 +91,9 @@ func (f *ContextFactory) GetStatus() (m []model.Status, err error) {
 				for _, rb := range rr.Backends {
 					r.Backends = append(r.Backends,
 						model.Backend{
-						Service: rb.Service,
-						Port:    rb.Port,
-						Path:    rb.Path})
+							Service: rb.Service,
+							Port:    rb.Port,
+							Path:    rb.Path})
 				}
 				si.Rules = append(si.Rules, r)
 			}
