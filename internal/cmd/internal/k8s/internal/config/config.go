@@ -27,6 +27,9 @@ func GetConfig(configPath, gslb string) (config Config, err error) {
 		if err = config.validate(); err != nil {
 			return
 		}
+		if gslb != "" {
+			config.K8gbTools.Name = gslb
+		}
 		return
 	}
 	return

@@ -27,12 +27,13 @@ var emptyGslb = GslbRaw{
 	Error:          fmt.Errorf("no gslb in configuration"),
 }
 
-//ContextFactory produces k8s context
+// ContextFactory produces k8s context
 type ContextFactory struct {
-	configs []*k8s.KubeConfig
+	configs  []*k8s.KubeConfig
+	gslbName string
 }
 
-//NewContextFactory returns context of command
+// NewContextFactory returns context of command
 func NewContextFactory(yaml, gslb string) (factory *ContextFactory, err error) {
 	factory = new(ContextFactory)
 	var k8sf *k8s.KubeConfigFactory
@@ -41,13 +42,18 @@ func NewContextFactory(yaml, gslb string) (factory *ContextFactory, err error) {
 		return
 	}
 	factory.configs, err = k8sf.InitializeConfigs()
+	factory.gslbName = k8sf.GetYamlName()
 	if err != nil {
 		return
 	}
 	return
 }
 
-//List returns list of GSLBs within namespaces
+func (f *ContextFactory) GetGSLBName() string {
+	return f.gslbName
+}
+
+// List returns list of GSLBs within namespaces
 func (f *ContextFactory) List() (m []model.ListItem, err error) {
 	m = make([]model.ListItem, 0)
 	raws, err := readRaw(f.configs)
@@ -55,6 +61,9 @@ func (f *ContextFactory) List() (m []model.ListItem, err error) {
 		return m, err
 	}
 	for _, raw := range raws.Gslb {
+		if raw.Name != f.GetGSLBName() {
+			continue
+		}
 		item := model.ListItem{
 			Namespace: raw.Namespace,
 			Name:      raw.Name,
@@ -68,51 +77,42 @@ func (f *ContextFactory) List() (m []model.ListItem, err error) {
 	return m, nil
 }
 
-//GetStatus returns gslb status across all configured contexts
+// GetStatus returns gslb status across all configured contexts
 func (f *ContextFactory) GetStatus() (m []model.Status, err error) {
 	//Do validations and transitions here!
 	m = make([]model.Status, 0)
-	r, err := readRaw(f.configs)
-	for _, rg := range r.Gslb {
-		s := model.Status{}
-		s.Host = rg.Cluster
-		s.Name = rg.Name
-		s.GeoTag = rg.GeoTag
-		s.Type = rg.Type
-		s.Namespace = rg.Namespace
-		for _, ri := range rg.Ingress {
-			si := model.Ingress{}
-			si.Name = ri.Name
-			si.Annotations = ri.Annotations
+	raws, err := readRaw(f.configs)
+	for _, raw := range raws.Gslb {
+		if raw.Name != f.gslbName {
+			continue
+		}
+		status := model.Status{}
+		status.Host = raw.Cluster
+		status.Name = raw.Name
+		status.GeoTag = raw.GeoTag
+		status.Type = raw.Type
+		status.Namespace = raw.Namespace
+		for _, ingRaw := range raw.Ingress {
+			ing := model.Ingress{}
+			ing.Name = ingRaw.Name
+			ing.Annotations = ingRaw.Annotations
 
-			for _, rr := range ri.Rules {
-				r := model.Rule{}
-				r.Host = rr.Host
-				for _, rb := range rr.Backends {
-					r.Backends = append(r.Backends,
+			for _, rawRule := range ingRaw.Rules {
+				rul := model.Rule{}
+				rul.Host = rawRule.Host
+				for _, rb := range rawRule.Backends {
+					rul.Backends = append(rul.Backends,
 						model.Backend{
 							Service: rb.Service,
 							Port:    rb.Port,
 							Path:    rb.Path})
 				}
-				si.Rules = append(si.Rules, r)
+				ing.Rules = append(ing.Rules, rul)
 			}
-			s.Ingresses = append(s.Ingresses, si)
+			status.Ingresses = append(status.Ingresses, ing)
 		}
-		m = append(m, s)
+		m = append(m, status)
 	}
-	//m.Name = *Raw.ValidateName()
-	//m.GeoTag = *Raw.ValidateGeoTag()
-	//m.Type = *Raw.ValidateType()
-	//m.Ingresses = *Raw.ValidateIngress()
-	//for _, gslb := range Raw.Gslb {
-	//	for _, ingress := range gslb.Ingresses {
-	//		for _, rule := range ingress.Rules {
-	//
-	//			m.Ingresses.Rules = append(m.Ingresses.Rules, )
-	//		}
-	//	}
-	//m.Host = *Raw.ValidateHost()
 	return m, err
 }
 
@@ -132,8 +132,8 @@ func readRaw(configs []*k8s.KubeConfig) (raw *Raw, err error) {
 	return
 }
 
-//maps unstructured data into GslbRaw structure. Any CRD change has to be reflected
-//in GslbRaw or underlying structures
+// maps unstructured data into GslbRaw structure. Any CRD change has to be reflected
+// in GslbRaw or underlying structures
 func getUnstructured(u *unstructured.UnstructuredList, config *k8s.KubeConfig) (gslbRaws []GslbRaw, err error) {
 	gslbRaws = make([]GslbRaw, len(u.Items))
 	if len(u.Items) == 0 {

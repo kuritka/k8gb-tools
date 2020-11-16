@@ -1,6 +1,9 @@
 package status
 
 import (
+	"errors"
+	"fmt"
+	"github.com/kuritka/k8gb-tools/pkg/model"
 	"github.com/kuritka/k8gb-tools/pkg/view"
 
 	"github.com/kuritka/k8gb-tools/internal/cmd/internal/k8sctx"
@@ -31,7 +34,15 @@ func (s *Status) Run() (err error) {
 	if err != nil {
 		return err
 	}
-	for _, m := range model {
+	err = Display(model, ctx.GetGSLBName())
+	return
+}
+
+func Display(models []model.Status, gSLBName string) (err error) {
+	if len(models) == 0 {
+		return errors.New(fmt.Sprintf( `"%s" not found`, gSLBName))
+	}
+	for _, m := range models {
 		err = view.NewStatusView(m).Print()
 		if err != nil {
 			return

@@ -10,7 +10,7 @@ type StatusView struct {
 	status  model.Status
 }
 
-//NewStatusView retreives status view
+//NewStatusView retrieves status view
 func NewStatusView(status model.Status) *StatusView {
 	v := new(StatusView)
 	v.printer = DefaultPrettyPrinter()

@@ -57,6 +57,10 @@ func (f *KubeConfigFactory) InitializeConfigs() (configs []*KubeConfig, err erro
 	return
 }
 
+func (f *KubeConfigFactory) GetYamlName() string {
+	return f.yaml.K8gbTools.Name
+}
+
 func getRawConfigs(kubeConfigPath string) (rawConfig clientcmdapi.Config, err error) {
 	b, err := ioutil.ReadFile(kubeConfigPath)
 	if err != nil {
