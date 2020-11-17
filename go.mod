@@ -16,5 +16,6 @@ require (
 	k8s.io/client-go v0.17.2
 	github.com/miekg/dns v1.1.30
 	github.com/lixiangzhong/dnsutil v0.0.0-20191203032812-75ad39d2945a
+	github.com/hashicorp/go-multierror v1.1.0
 
 )

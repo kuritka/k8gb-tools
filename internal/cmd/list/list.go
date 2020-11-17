@@ -1,7 +1,6 @@
 package list
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/enescakir/emoji"
@@ -35,7 +34,7 @@ func (s *Status) Run() error {
 		return err
 	}
 	if len(list) == 0 {
-		return errors.New(fmt.Sprintf( `"%s" not found`, ctx.GetGSLBName()))
+		return fmt.Errorf(`"%s" not found`, ctx.GetGSLBName())
 	}
 	fmt.Printf("\n%s %s\n", emoji.FourLeafClover, aurora.BrightBlue("k8gb"))
 	for _, l := range list {

@@ -1,7 +1,7 @@
 package view
 
 import (
-	"github.com/kuritka/k8gb-tools/pkg/common/guard"
+	"github.com/hashicorp/go-multierror"
 	"github.com/kuritka/k8gb-tools/pkg/model"
 )
 
@@ -20,15 +20,21 @@ func NewStatusView(status model.Status) *StatusView {
 
 //Print prints view
 func (v *StatusView) Print() error {
-	guard.FailOnError(v.printer.Title(v.status.GeoTag, v.status.Name), "printing geotag or name")
-	guard.FailOnError(v.printer.Paragraph("Type", v.status.Type, nil), "printing type")
+	var err error
+	var e *multierror.Error
+	err = v.printer.Title(v.status.GeoTag, v.status.Name)
+	e = multierror.Append(e, err)
+	err = v.printer.Paragraph("Type", v.status.Type, nil)
+	e = multierror.Append(e, err)
 	for _, ingress := range v.status.Ingresses {
-		guard.FailOnError(v.printer.Paragraph("Ingress", ingress.Name, nil), "ingress")
+		err = v.printer.Paragraph("Ingress", ingress.Name, nil)
+		e = multierror.Append(e, err)
 		for _, rule := range ingress.Rules {
-			guard.FailOnError(v.printer.NoParagraph(rule.Host, nil), "ingress")
+			err = v.printer.NoParagraph(rule.Host, nil)
+			e = multierror.Append(e, err)
 		}
 	}
 	v.printer.NewLine()
 	v.printer.NewLine()
-	return nil
+	return e.ErrorOrNil()
 }
